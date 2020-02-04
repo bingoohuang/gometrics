@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// MetricLine represents a metric log line structure in log file
+// MetricLine represents a metric rotate line structure in rotate file
 type MetricLine struct {
 	Time     string `json:"time"` // yyyyMMddHHmmssSSS
 	Key      string `json:"key"`  // {{k1}}#{{k2}}#{{k3}}
