@@ -1,0 +1,27 @@
+# Metrics 文件格式
+
+## 日志文件位置
+
+`/var/log/footstone/metrics/metrics-key.{{ appName }}.log`
+
+## 内容格式
+
+1. 每行为JSON
+1. JSON格式：
+
+    ```json
+    {"time":"20191121145846358","key":"{{k1}}#{{k2}}#{{k3}}","hostname":"bogon","logtype":"QPS","v1":1116,"v2":0,"min":-1,"max":-1}
+    ```
+
+1. 字段含义
+
+    名称 | 描述                                                          
+    --- | ---
+    time     | 记录埋点时间格式:yyyyMMddHHmmssSSS                                
+    key      | 三级埋点，使用#分割；1.最大100字符；2.屏蔽特殊字符（, \| # \\r \\n \\t）       
+    hostname | 主机hostname                                                       
+    logtype  | QPS：请求量，RT：平均响应时间，SUCCESS_RATE：成功率，FAIL_RATE：失败率，HIT_RATE：失败率，CUR：瞬时值，DEFAULT：默认     
+    v1       | QPS: v1 当前值; RT: v1 总响应时间；SUCCESS_RATE：v1 成功次数       
+    v2       | QPS: 0; RT: v2 总访问次数；SUCCESS_RATE：总次数       
+    max      | RT：最大响应时间      
+    min      | RT：最小响应时间       
