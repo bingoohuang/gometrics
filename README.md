@@ -16,6 +16,7 @@ metrics golang client library.
 ## HB 
 
 心跳
+
 \# | TYPE  | Meaning
 ---|---|---
 1 |HB| 一次心跳
