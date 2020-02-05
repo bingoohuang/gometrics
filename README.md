@@ -131,9 +131,9 @@ func YourBusinessDemoCur() {
 
 ```bash
 $ tail -f /tmp/metricslog/metrics-hb.bingoohuangapp.log  
-{"time":"20200205162411000","Key":"","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
-{"time":"20200205162431000","Key":"","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
-{"time":"20200205162451000","Key":"","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
+{"time":"20200205162411000","key":"bingoohuangapp.hb","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
+{"time":"20200205162431000","key":"bingoohuangapp.hb","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
+{"time":"20200205162451000","key":"bingoohuangapp.hb","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
 ```
 
 ```bash

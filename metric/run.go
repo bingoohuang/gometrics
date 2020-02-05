@@ -22,11 +22,14 @@ func init() { // nolint
 
 // Runner is a runner for metric rotate writing
 type Runner struct {
-	startTime       time.Time
+	startTime time.Time
+	AppName   string
+
 	MetricsInterval time.Duration
 	HBInterval      time.Duration
-	C               chan Line
-	stop            chan bool
+
+	C    chan Line
+	stop chan bool
 
 	MetricsLogfile io.Writer
 	HBLogfile      io.Writer
@@ -48,6 +51,7 @@ func NewRunner(ofs ...OptionFn) *Runner {
 	o := createOption(ofs)
 
 	return &Runner{
+		AppName:         o.AppName,
 		MetricsInterval: o.MetricsInterval,
 		HBInterval:      o.HBInterval,
 		C:               make(chan Line, o.ChanCap),
@@ -171,6 +175,7 @@ func (r *Runner) mergeLog(l Line) {
 func (r *Runner) logHB() {
 	v := Line{
 		Time:     time.Now().Format("20060102150405000"),
+		Key:      r.AppName + ".hb",
 		LogType:  HB,
 		V1:       1, // nolint gomnd
 		Hostname: Hostname,
