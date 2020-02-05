@@ -1,6 +1,7 @@
 package metric
 
 import (
+	"io"
 	"path/filepath"
 	"runtime"
 	"time"
@@ -21,11 +22,14 @@ func init() { // nolint
 
 // Runner is a runner for metric rotate writing
 type Runner struct {
-	startTime time.Time
-	Interval  time.Duration
-	C         chan Line
-	stop      chan bool
-	Logfile   *rotate.File
+	startTime       time.Time
+	MetricsInterval time.Duration
+	HBInterval      time.Duration
+	C               chan Line
+	stop            chan bool
+
+	MetricsLogfile io.Writer
+	HBLogfile      io.Writer
 
 	cache map[cacheKey]*Line
 }
@@ -42,20 +46,27 @@ func makeCacheKey(key string, logType LogType) cacheKey {
 // NewRunner creates a Runner
 func NewRunner(ofs ...OptionFn) *Runner {
 	o := createOption(ofs)
-	f := filepath.Join(o.LogPath, o.LogFilePrefix+o.AppName+o.LogFilePostfix)
+
+	return &Runner{
+		MetricsInterval: o.MetricsInterval,
+		HBInterval:      o.HBInterval,
+		C:               make(chan Line, o.ChanCap),
+		stop:            make(chan bool, 1),
+		MetricsLogfile:  createRotateFile(o, "metrics-key."),
+		HBLogfile:       createRotateFile(o, "metrics-hb."),
+		cache:           make(map[cacheKey]*Line),
+	}
+}
+
+func createRotateFile(o *Option, prefix string) *rotate.File {
+	f := filepath.Join(o.LogPath, prefix+o.AppName+".log")
 	lf, err := rotate.NewFile(f, o.MaxBackups)
 
 	if err != nil {
-		logrus.Warnf("fail to new log file %s", f)
+		logrus.Warnf("fail to new logMetrics file %s", f)
 	}
 
-	return &Runner{
-		Interval: o.Interval,
-		C:        make(chan Line, o.ChanCap),
-		stop:     make(chan bool, 1),
-		Logfile:  lf,
-		cache:    make(map[cacheKey]*Line),
-	}
+	return lf
 }
 
 // Start starts the runner
@@ -75,19 +86,26 @@ func (r *Runner) Stop() {
 func (r *Runner) run() {
 	r.startTime = time.Now()
 
-	ticker := time.NewTicker(r.Interval)
-	defer ticker.Stop()
+	metricsTicker := time.NewTicker(r.MetricsInterval)
+	defer metricsTicker.Stop()
+
+	r.logHB()
+
+	hbTicker := time.NewTicker(r.HBInterval)
+	defer hbTicker.Stop()
 
 	for {
 		select {
 		case l := <-r.C:
 			r.mergeLog(l)
 
-			if r.afterInterval() {
-				r.log()
+			if r.afterMetricsInterval() {
+				r.logMetrics()
 			}
-		case <-ticker.C:
-			r.log()
+		case <-metricsTicker.C:
+			r.logMetrics()
+		case <-hbTicker.C:
+			r.logHB()
 		case <-r.stop:
 			logrus.Info("runner stopped")
 			return
@@ -95,11 +113,11 @@ func (r *Runner) run() {
 	}
 }
 
-func (r *Runner) afterInterval() bool {
-	return time.Since(r.startTime) > r.Interval
+func (r *Runner) afterMetricsInterval() bool {
+	return time.Since(r.startTime) > r.MetricsInterval
 }
 
-func (r *Runner) log() {
+func (r *Runner) logMetrics() {
 	r.startTime = time.Now()
 
 	for k, pv := range r.cache {
@@ -115,7 +133,7 @@ func (r *Runner) log() {
 		}
 
 		v.Time = time.Now().Format("20060102150405000")
-		r.writeLog(util.JSONCompact(v))
+		r.writeLog(r.MetricsLogfile, util.JSONCompact(v))
 
 		if v.LogType.isSimple() {
 			delete(r.cache, k)
@@ -126,20 +144,20 @@ func (r *Runner) log() {
 	}
 }
 
-func (r *Runner) writeLog(content string) {
-	if r.Logfile == nil {
+func (r *Runner) writeLog(file io.Writer, content string) {
+	if file == nil {
 		return
 	}
 
-	if _, err := r.Logfile.Write([]byte(content + "\n")); err != nil {
-		logrus.Warnf("fail to write log, error %v", err)
+	if _, err := file.Write([]byte(content + "\n")); err != nil {
+		logrus.Warnf("fail to write logMetrics, error %v", err)
 	}
 }
 
 func (r *Runner) mergeLog(l Line) {
 	k := makeCacheKey(l.Key, l.LogType)
 	if c, ok := r.cache[k]; ok {
-		if l.LogType == LogTypeCUR { // 瞬值，直接记录日志
+		if l.LogType == KeyCUR { // 瞬值，直接记录日志
 			c.V1 = l.V1
 			c.V2 = l.V2
 		}
@@ -148,6 +166,16 @@ func (r *Runner) mergeLog(l Line) {
 	} else {
 		r.cache[k] = &l
 	}
+}
+
+func (r *Runner) logHB() {
+	v := Line{
+		Time:     time.Now().Format("20060102150405000"),
+		LogType:  HB,
+		V1:       1, // nolint gomnd
+		Hostname: Hostname,
+	}
+	r.writeLog(r.HBLogfile, util.JSONCompact(v))
 }
 
 func (l *Line) updateMinMax(n Line) {

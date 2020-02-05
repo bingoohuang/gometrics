@@ -5,25 +5,28 @@ import (
 	"strings"
 )
 
-// LogType means the log type
+// LogType means the logMetrics type
 type LogType string
 
 const (
-	LogTypeRT          LogType = "RT"
-	LogTypeQPS         LogType = "QPS"
-	LogTypeSuccessRate LogType = "SUCCESS_RATE"
-	LogTypeFailRate    LogType = "FAIL_RATE"
-	LogTypeHitRate     LogType = "HIT_RATE"
-	LogTypeCUR         LogType = "CUR"
+	KeyRT          LogType = "RT"
+	KeyQPS         LogType = "QPS"
+	KeySuccessRate LogType = "SUCCESS_RATE"
+	KeyFailRate    LogType = "FAIL_RATE"
+	KeyHitRate     LogType = "HIT_RATE"
+	KeyCUR         LogType = "CUR"
+
+	// HB 特殊处理，每20s记录一次
+	HB LogType = "HB"
 )
 
 // isSimple 是否简单的值，值与值之间，不需要有累计等关系
-func (lt LogType) isSimple() bool { return lt == LogTypeCUR }
+func (lt LogType) isSimple() bool { return lt == KeyCUR }
 
 // isPercent 是否是百分比类型
 func (lt LogType) isPercent() bool {
 	switch lt {
-	case LogTypeSuccessRate, LogTypeFailRate, LogTypeHitRate:
+	case KeySuccessRate, KeyFailRate, KeyHitRate:
 		return true
 	}
 
@@ -31,12 +34,12 @@ func (lt LogType) isPercent() bool {
 }
 
 // isUseCurrentValue4MinMax 是否使用当前v1/v2值来生成，还是使用累积值来生成min/max值
-func (lt LogType) isUseCurrentValue4MinMax() bool { return lt == LogTypeRT }
+func (lt LogType) isUseCurrentValue4MinMax() bool { return lt == KeyRT }
 
 // Line represents a metric rotate line structure in rotate file
 type Line struct {
 	Time     string  `json:"time"` // yyyyMMddHHmmssSSS
-	Key      string  `json:"Key"`  // {{k1}}#{{k2}}#{{k3}}
+	Key      string  `json:"key"`  // {{k1}}#{{k2}}#{{k3}}
 	Hostname string  `json:"hostname"`
 	LogType  LogType `json:"logtype"`
 	V1       int64   `json:"v1"`

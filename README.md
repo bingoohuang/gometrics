@@ -20,8 +20,10 @@ metrics golang client
     ```dotenv
     # 应用名称，默认使用当前pid
     APP_NAME=bingoohuangapp
-    # 写入日志的间隔时间，默认1s
-    INTERVAL=1s
+    # 写入指标日志的间隔时间，默认1s
+    METRICS_INTERVAL=1s
+    # 写入心跳日志的间隔时间，默认20s
+    HB_INTERVAL = 20s
     # 指标日志的处理容量，默认1000
     CHAN_CAP=1000
     # 指标日志存放的目录，默认/var/log/metrics
