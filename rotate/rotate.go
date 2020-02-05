@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/bingoohuang/gometrics/util"
 )
 
@@ -42,6 +44,8 @@ func (f *File) open() error {
 		return err
 	}
 
+	logrus.Infof("log file %s created", f.Path)
+
 	return nil
 }
 
@@ -72,13 +76,19 @@ func (f *File) rotate() error {
 	}
 
 	yesterday := t.AddDate(0, 0, -1)
-	if err := os.Rename(f.Path, f.Path+"."+util.FormatTime(yesterday, yyyyMMdd)); err != nil {
+
+	target := f.Path + "." + util.FormatTime(yesterday, yyyyMMdd)
+	logrus.Infof("rotate %s to %s", f.Path, target)
+
+	if err := os.Rename(f.Path, target); err != nil {
 		return err
 	}
 
 	if f.MaxBackups > 0 {
 		day := t.AddDate(0, 0, -f.MaxBackups)
-		_ = os.Remove(f.Path + "." + util.FormatTime(day, yyyyMMdd))
+		old := f.Path + "." + util.FormatTime(day, yyyyMMdd)
+		logrus.Infof("remove log file %s before max backup days %d", old, f.MaxBackups)
+		_ = os.Remove(old)
 	}
 
 	return f.open()

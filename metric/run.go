@@ -15,7 +15,7 @@ import (
 var DefaultRunner *Runner // nolint
 
 func init() { // nolint
-	DefaultRunner = NewRunnerOptions(EnvOption())
+	DefaultRunner = NewRunner(EnvOption())
 	DefaultRunner.Start()
 }
 
@@ -41,12 +41,8 @@ func makeCacheKey(key string, logType LogType) cacheKey {
 
 // NewRunner creates a Runner
 func NewRunner(ofs ...OptionFn) *Runner {
-	return NewRunnerOptions(createOption(ofs))
-}
-
-// NewRunnerOptions creates a Runner
-func NewRunnerOptions(o *Option) *Runner {
-	f := filepath.Join(o.LogPath, "metrics-Key."+o.AppName+".log")
+	o := createOption(ofs)
+	f := filepath.Join(o.LogPath, o.LogFilePrefix+o.AppName+o.LogFilePostfix)
 	lf, err := rotate.NewFile(f, o.MaxBackups)
 
 	if err != nil {

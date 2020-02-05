@@ -12,12 +12,15 @@ import (
 // nolint gomnd
 func TestEnvOption(t *testing.T) {
 	println(util.PickFirst(os.Getwd()))
-	o := EnvOption("../testdata/golden.env")
+	var o Option
+	EnvOption("../testdata/golden.env")(&o)
 	assert.Equal(t, Option{
-		AppName:    "bingoohuangapp",
-		Interval:   3 * time.Second,
-		ChanCap:    123,
-		LogPath:    "/tmp/metricslog",
-		MaxBackups: 7,
-	}, *o)
+		LogFilePrefix:  "metrics-key.",
+		LogFilePostfix: ".log",
+		AppName:        "bingoohuangapp",
+		Interval:       3 * time.Second,
+		ChanCap:        123,
+		LogPath:        "/tmp/metricslog",
+		MaxBackups:     7,
+	}, o)
 }
