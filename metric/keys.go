@@ -1,6 +1,7 @@
-package gometrics
+package metric
 
 import (
+	"github.com/bingoohuang/gometrics/util"
 	"github.com/sirupsen/logrus"
 )
 
@@ -46,14 +47,14 @@ func (k *Keys) validateKey(i int, key string) bool {
 		return false
 	}
 
-	key = StripAny(key, strippedChars)
+	key = util.StripAny(key, strippedChars)
 	if key == "" {
 		logrus.Warnf("invalid key %s", key)
 
 		return false
 	}
 
-	k.Keys[i] = Abbr(key, 100, "...")
+	k.Keys[i] = util.Abbr(key, 100, "...")
 
 	return true
 }

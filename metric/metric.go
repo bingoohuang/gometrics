@@ -1,4 +1,4 @@
-package gometrics
+package metric
 
 import "time"
 

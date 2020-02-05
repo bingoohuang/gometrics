@@ -4,6 +4,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/bingoohuang/gometrics/util"
 )
 
 // File describes a file that gets rotating
@@ -14,10 +16,6 @@ type File struct {
 
 	lastTime string
 	file     *os.File
-}
-
-func yyyyMMdd(t time.Time) string {
-	return t.Format("20060102")
 }
 
 func (f *File) close() error {
@@ -47,6 +45,8 @@ func (f *File) open() error {
 	return nil
 }
 
+const yyyyMMdd = "yyyy-MM-dd"
+
 // rotate if required
 func (f *File) rotate() error {
 	if f.file == nil {
@@ -54,7 +54,7 @@ func (f *File) rotate() error {
 	}
 
 	t := time.Now()
-	ts := yyyyMMdd(t)
+	ts := util.FormatTime(t, yyyyMMdd)
 
 	if f.lastTime == "" {
 		f.lastTime = ts
@@ -72,13 +72,13 @@ func (f *File) rotate() error {
 	}
 
 	yesterday := t.AddDate(0, 0, -1)
-	if err := os.Rename(f.Path, f.Path+"."+yyyyMMdd(yesterday)); err != nil {
+	if err := os.Rename(f.Path, f.Path+"."+util.FormatTime(yesterday, yyyyMMdd)); err != nil {
 		return err
 	}
 
 	if f.MaxBackups > 0 {
 		day := t.AddDate(0, 0, -f.MaxBackups)
-		_ = os.Remove(f.Path + "." + yyyyMMdd(day))
+		_ = os.Remove(f.Path + "." + util.FormatTime(day, yyyyMMdd))
 	}
 
 	return f.open()
@@ -86,8 +86,8 @@ func (f *File) rotate() error {
 
 // NewFile creates a new file that will be rotated daily (at midnight in specified location).
 // logPath is file full path like /var/log/my.log
-func NewFile(logPath string) (*File, error) {
-	f := &File{Path: logPath}
+func NewFile(logPath string, maxBackups int) (*File, error) {
+	f := &File{Path: logPath, MaxBackups: maxBackups}
 
 	// force early failure if we can't open the file
 	if err := f.rotate(); err != nil {

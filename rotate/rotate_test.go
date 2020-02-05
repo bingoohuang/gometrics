@@ -39,7 +39,7 @@ func TestBasic(t *testing.T) {
 	defer os.RemoveAll("test_dir")
 
 	path := filepath.Join("test_dir", "second.log")
-	f, err := NewFile(path)
+	f, err := NewFile(path, 0)
 	assert.NoError(t, err)
 	assert.NotNil(t, f)
 	testWrite(t, f, path)
@@ -58,7 +58,7 @@ func TestBasic_Location(t *testing.T) {
 	defer os.RemoveAll("test_dir")
 
 	path := filepath.Join("test_dir", "third.log")
-	f, err := NewFile(path)
+	f, err := NewFile(path, 0)
 	assert.NoError(t, err)
 
 	n, err := io.WriteString(f, "hello\n")

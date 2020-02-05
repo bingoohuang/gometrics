@@ -1,4 +1,4 @@
-package gometrics
+package metric
 
 import (
 	"os"
@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-// MetricLine represents a metric rotate line structure in rotate file
-type MetricLine struct {
+// Line represents a metric rotate line structure in rotate file
+type Line struct {
 	Time     string `json:"time"` // yyyyMMddHHmmssSSS
 	Key      string `json:"key"`  // {{k1}}#{{k2}}#{{k3}}
 	Hostname string `json:"hostname"`
@@ -25,10 +25,10 @@ func init() { // nolint
 	Hostname, _ = os.Hostname()
 }
 
-// PutMetricLine new a MetricLine
+// PutMetricLine new a Line
 func (r *Runner) PutMetricLine(keys []string, logtype string, v1, v2, min, max int64) {
 	select {
-	case r.C <- MetricLine{
+	case r.C <- Line{
 		Time:     time.Now().Format("20060102150405000"),
 		Key:      strings.Join(keys, "#"),
 		Hostname: Hostname,

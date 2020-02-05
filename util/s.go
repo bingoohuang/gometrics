@@ -1,9 +1,10 @@
-package gometrics
+package util
 
 import (
 	"bytes"
 	"encoding/json"
 	"strings"
+	"time"
 )
 
 // StripAny strips any Unicode code points in chars are within s.
@@ -75,4 +76,24 @@ func JSONCompactE(data interface{}) (string, error) {
 // PickFirst ignores the error and returns s
 func PickFirst(s string, _ interface{}) string {
 	return s
+}
+
+// ConvertTimeLayout converts date time format in java style to go style
+func ConvertTimeLayout(layout string) string {
+	l := layout
+	l = strings.Replace(l, "yyyy", "2006", -1)
+	l = strings.Replace(l, "yy", "06", -1)
+	l = strings.Replace(l, "MM", "01", -1)
+	l = strings.Replace(l, "dd", "02", -1)
+	l = strings.Replace(l, "HH", "15", -1)
+	l = strings.Replace(l, "mm", "04", -1)
+	l = strings.Replace(l, "ss", "05", -1)
+	l = strings.Replace(l, "SSS", "000", -1)
+
+	return l
+}
+
+// FormatTime 日期转字符串
+func FormatTime(d time.Time, layout string) string {
+	return d.Format(ConvertTimeLayout(layout))
 }

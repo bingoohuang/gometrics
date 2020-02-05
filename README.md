@@ -11,7 +11,32 @@ metrics golang client
 5 | HIT_RATE| 命中率
 6 | CUR | 瞬时值
 
-## Usage
+## Client Usage
+
+### 准备参数
+
+1. 通过.env环境文件设置，优先级最高。在当前目录下创建.env文件，设定一些参数， eg.
+        
+    ```dotenv
+    # 应用名称，默认使用当前pid
+    APP_NAME=bingoohuangapp
+    # 写入日志的间隔时间，默认1s
+    INTERVAL=1s
+    # 指标日志的处理容量，默认1000
+    CHAN_CAP=1000
+    # 指标日志存放的目录，默认/var/log/metrics
+    LOG_PATH=/tmp/metricslog
+    # 指标日志文件最大保留天数
+    MAX_BACKUPS=7
+    ```
+
+1. 通过命令行环境变量设置
+
+    eg. `APP_NAME=demo demoproc`
+
+1. 通过命令行指定环境文件名
+
+    eg. `ENV_FILE=testdata/golden.env demoproc`
 
 ### RT 平均响应时间
 
@@ -86,3 +111,8 @@ func YourBusinessDemoCur() {
     // business logic
 }
 ```
+
+### Demo
+
+1. build `go fmt ./...;goimports -w .;golangci-lint run --enable-all;golint . ;go install -ldflags="-s -w" ./...`
+1. run ` ENV_FILE=testdata/golden.env gometricsdemo`

@@ -1,19 +1,21 @@
-package gometrics
+package metric
 
 import (
 	"fmt"
+	"path/filepath"
 	"runtime"
 	"time"
 
 	"github.com/bingoohuang/gometrics/rotate"
-
+	"github.com/bingoohuang/gometrics/util"
 	"github.com/sirupsen/logrus"
 )
 
 // DefaultRunner is the default runner for metric recording
-var DefaultRunner = NewRunner(1*time.Second, 1000, "demo.log") // nolint
+var DefaultRunner *Runner // nolint
 
 func init() { // nolint
+	DefaultRunner = NewRunnerOptions(EnvOption())
 	DefaultRunner.Start()
 }
 
@@ -21,22 +23,24 @@ func init() { // nolint
 type Runner struct {
 	startTime time.Time
 	Interval  time.Duration
-	C         chan MetricLine
-	StopC     chan bool
+	C         chan Line
+	stop      chan bool
 	Logfile   *rotate.File
 }
 
-// NewRunner creates a Runner
-func NewRunner(interval time.Duration, chanCap int, logfile string) *Runner {
-	lf, err := rotate.NewFile(logfile)
+// NewRunnerOptions creates a Runner
+func NewRunnerOptions(o *Option) *Runner {
+	f := filepath.Join(o.LogPath, "metrics-key."+o.AppName+".log")
+	lf, err := rotate.NewFile(f, o.MaxBackups)
+
 	if err != nil {
-		logrus.Warnf("fail to new log file %s", logfile)
+		logrus.Warnf("fail to new log file %s", f)
 	}
 
 	return &Runner{
-		Interval: interval,
-		C:        make(chan MetricLine, chanCap),
-		StopC:    make(chan bool, 1),
+		Interval: o.Interval,
+		C:        make(chan Line, o.ChanCap),
+		stop:     make(chan bool, 1),
 		Logfile:  lf,
 	}
 }
@@ -50,7 +54,7 @@ func (r *Runner) Start() {
 // Stop stops the runner
 func (r *Runner) Stop() {
 	select {
-	case r.StopC <- true:
+	case r.stop <- true:
 	default:
 	}
 }
@@ -64,7 +68,7 @@ func (r *Runner) run() {
 	for {
 		select {
 		case ml := <-r.C:
-			jsonLog := JSONCompact(ml)
+			jsonLog := util.JSONCompact(ml)
 
 			r.writeLog(jsonLog)
 
@@ -74,7 +78,7 @@ func (r *Runner) run() {
 		case <-ticker.C:
 			fmt.Println(time.Now())
 			r.log()
-		case <-r.StopC:
+		case <-r.stop:
 			logrus.Info("runner stopped")
 			return
 		}
