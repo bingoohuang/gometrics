@@ -58,10 +58,6 @@ func LogPath(v string) OptionFn { return func(o *Option) { o.LogPath = v } }
 // MaxBackups sets max backups of metrics log files
 func MaxBackups(v int) OptionFn { return func(o *Option) { o.MaxBackups = v } }
 
-// NewRunner creates a Runner
-func NewRunner(ofs ...OptionFn) *Runner {
-	return NewRunnerOptions(createOption(ofs))
-}
 
 func createOption(ofs []OptionFn) *Option {
 	o := &Option{}

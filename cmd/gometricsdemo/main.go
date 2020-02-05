@@ -16,7 +16,8 @@ func main() {
 	for i := 0; ; i++ {
 		f()
 
-		switch i % 6 {
+		m := i % 6
+		switch m {
 		case 0:
 			func() {
 				defer metric.RT("key1", "key2", "key3").Record()

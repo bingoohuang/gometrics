@@ -5,18 +5,18 @@ import "time"
 // Recorder record rate
 type Recorder struct {
 	Runner  *Runner
-	LogType string
+	LogType LogType
 	Rate    bool
 	Keys
 }
 
 // MakeRecorder creates a Recorder
-func MakeRecorder(logType string, keys []string) Recorder {
+func MakeRecorder(logType LogType, keys []string) Recorder {
 	return DefaultRunner.MakeRecorder(logType, keys)
 }
 
 // MakeRecorder creates a Recorder
-func (r *Runner) MakeRecorder(logType string, keys []string) Recorder {
+func (r *Runner) MakeRecorder(logType LogType, keys []string) Recorder {
 	return Recorder{Runner: r, LogType: logType, Keys: NewKeys(keys)}
 }
 
@@ -38,7 +38,7 @@ func RT(keys ...string) RTRecorder { return DefaultRunner.RT(keys...) }
 
 // RT makes a RT Recorder
 func (r *Runner) RT(keys ...string) RTRecorder {
-	return RTRecorder{Recorder: r.MakeRecorder("RT", keys), Start: time.Now()}
+	return RTRecorder{Recorder: r.MakeRecorder(LogTypeRT, keys), Start: time.Now()}
 }
 
 // Record records a round-time
@@ -56,7 +56,7 @@ type QPSRecorder struct{ Recorder }
 func QPS(keys ...string) QPSRecorder { return DefaultRunner.QPS(keys...) }
 
 // QPS makes a QPS Recorder
-func (r *Runner) QPS(keys ...string) QPSRecorder { return QPSRecorder{r.MakeRecorder("QPS", keys)} }
+func (r *Runner) QPS(keys ...string) QPSRecorder { return QPSRecorder{r.MakeRecorder(LogTypeQPS, keys)} }
 
 // Record records a request
 func (q QPSRecorder) Record(times int64) {
@@ -73,7 +73,7 @@ func SuccessRate(keys ...string) SuccessRateRecorder { return DefaultRunner.Succ
 
 // SuccessRate makes a SuccessRateRecorder
 func (r *Runner) SuccessRate(keys ...string) SuccessRateRecorder {
-	return SuccessRateRecorder{r.MakeRecorder("SUCCESS_RATE", keys)}
+	return SuccessRateRecorder{r.MakeRecorder(LogTypeSuccessRate, keys)}
 }
 
 // IncrSuccess increment success count
@@ -94,7 +94,7 @@ func FailRate(keys ...string) FailRateRecorder { return DefaultRunner.FailRate(k
 
 // FailRate creates a FailRateRecorder
 func (r *Runner) FailRate(keys ...string) FailRateRecorder {
-	return FailRateRecorder{r.MakeRecorder("FAIL_RATE", keys)}
+	return FailRateRecorder{r.MakeRecorder(LogTypeFailRate, keys)}
 }
 
 // IncrFail increment success count
@@ -115,7 +115,7 @@ func HitRate(keys ...string) HitRateRecorder { return DefaultRunner.HitRate(keys
 
 // HitRate makes a HitRateRecorder
 func (r *Runner) HitRate(keys ...string) HitRateRecorder {
-	return HitRateRecorder{r.MakeRecorder("HIT_RATE", keys)}
+	return HitRateRecorder{r.MakeRecorder(LogTypeHitRate, keys)}
 }
 
 // IncrHit increment success count
@@ -136,7 +136,7 @@ func Cur(keys ...string) CurRecorder { return DefaultRunner.Cur(keys...) }
 
 // Cur makes a Cur Recorder
 func (r *Runner) Cur(keys ...string) CurRecorder {
-	return CurRecorder{r.MakeRecorder("CUR", keys)}
+	return CurRecorder{r.MakeRecorder(LogTypeCUR, keys)}
 }
 
 // Record record  v1

@@ -42,14 +42,14 @@ const strippedChars = `" .,|#\` + "\t\r\n"
 
 func (k *Keys) validateKey(i int, key string) bool {
 	if key == "" {
-		logrus.Warn("key can not be empty")
+		logrus.Warn("Key can not be empty")
 
 		return false
 	}
 
 	key = util.StripAny(key, strippedChars)
 	if key == "" {
-		logrus.Warnf("invalid key %s", key)
+		logrus.Warnf("invalid Key %s", key)
 
 		return false
 	}
