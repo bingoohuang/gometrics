@@ -1,6 +1,8 @@
 # gometrics
 
-metrics golang client 
+metrics golang client library.
+
+## metrics
 
 \# | TYPE  | Meaning
 ---|---|---
@@ -10,6 +12,13 @@ metrics golang client
 4 | FAIL_RATE|失败率
 5 | HIT_RATE| 命中率
 6 | CUR | 瞬时值
+
+## HB 
+
+心跳
+\# | TYPE  | Meaning
+---|---|---
+1 |HB| 一次心跳
 
 ## Client Usage
 
