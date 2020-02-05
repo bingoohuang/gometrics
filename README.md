@@ -143,3 +143,26 @@ $ tail -f /tmp/metricslog/metrics-key.bingoohuangapp.log
 {"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"CUR","v1":100,"v2":0,"min":0,"max":0}
 {"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"RT","v1":193,"v2":1,"min":0,"max":811}
 ```
+
+## cloc
+
+```bash
+# bingoo @ 192 in ~/GitHub/gometrics on git:master o [16:54:30]
+$ go get -u github.com/hhatto/gocloc/cmd/gocloc
+
+# bingoo @ 192 in ~/GitHub/gometrics on git:master x [16:54:49]
+$ gocloc .
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              12            230             82            788
+XML                              4              0              0            289
+Markdown                         3             46              0            134
+-------------------------------------------------------------------------------
+TOTAL                           19            276             82           1211
+-------------------------------------------------------------------------------
+
+# bingoo @ 192 in ~/GitHub/gometrics on git:master o [16:55:03]
+$ date
+2020年 2月 5日 星期三 16时56分33秒 CST
+```
