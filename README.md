@@ -118,3 +118,18 @@ func YourBusinessDemoCur() {
 
 1. build `go fmt ./...;goimports -w .;golangci-lint run --enable-all;golint . ;go install -ldflags="-s -w" ./...`
 1. run ` ENV_FILE=testdata/golden.env gometricsdemo`
+
+```bash
+$ tail -f /tmp/metricslog/metrics-hb.bingoohuangapp.log  
+{"time":"20200205162411000","Key":"","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
+{"time":"20200205162431000","Key":"","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
+{"time":"20200205162451000","Key":"","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
+```
+
+```bash
+$ tail -f /tmp/metricslog/metrics-key.bingoohuangapp.log   
+{"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"FAIL_RATE","v1":0,"v2":2,"min":0,"max":100}
+{"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"HIT_RATE","v1":1,"v2":2,"min":0,"max":100}
+{"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"CUR","v1":100,"v2":0,"min":0,"max":0}
+{"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"RT","v1":193,"v2":1,"min":0,"max":811}
+```
