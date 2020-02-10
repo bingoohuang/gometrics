@@ -93,6 +93,11 @@ func ConvertTimeLayout(layout string) string {
 	return l
 }
 
+// ParseTime 解析日期转字符串
+func ParseTime(d string, layout string) (time.Time, error) {
+	return time.Parse(ConvertTimeLayout(layout), d)
+}
+
 // FormatTime 日期转字符串
 func FormatTime(d time.Time, layout string) string {
 	return d.Format(ConvertTimeLayout(layout))
