@@ -121,6 +121,7 @@ func (r *Runner) afterMetricsInterval() bool { return time.Since(r.startTime) > 
 
 func (r *Runner) logMetrics() {
 	r.startTime = time.Now()
+	tt := time.Now().Format("20060102150405000")
 
 	for k, pv := range r.cache {
 		v := *pv
@@ -134,7 +135,7 @@ func (r *Runner) logMetrics() {
 			v.V1 = v.V2
 		}
 
-		v.Time = time.Now().Format("20060102150405000")
+		v.Time = tt
 		r.writeLog(r.MetricsLogfile, util.JSONCompact(v))
 
 		if v.LogType.isSimple() {
@@ -159,7 +160,7 @@ func (r *Runner) writeLog(file io.Writer, content string) {
 func (r *Runner) mergeLog(l Line) {
 	k := makeCacheKey(l.Key, l.LogType)
 	if c, ok := r.cache[k]; ok {
-		if l.LogType == KeyCUR { // 瞬值，直接记录日志
+		if l.LogType.isSimple() { // 瞬值，直接更新日志
 			c.V1 = l.V1
 			c.V2 = l.V2
 		}
