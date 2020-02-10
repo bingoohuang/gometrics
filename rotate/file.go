@@ -124,12 +124,9 @@ func (o *File) detectRotate(t time.Time) (rotated string, outMaxBackups []string
 
 			if strings.HasPrefix(path, o.Filename+".") {
 				fis := path[len(o.Filename+"."):]
-				backDay, err := util.ParseTime(fis, yyyyMMdd)
-				if err != nil {
-					return err
-				}
-
-				if backDay.Before(day) {
+				if backDay, err := util.ParseTime(fis, yyyyMMdd); err != nil {
+					return nil // ignore this file
+				} else if backDay.Before(day) {
 					outMaxBackups = append(outMaxBackups, path)
 				}
 			}
