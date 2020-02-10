@@ -6,7 +6,7 @@ import "time"
 type Recorder struct {
 	Runner  *Runner
 	LogType LogType
-	Keys
+	Key
 }
 
 // MakeRecorder creates a Recorder
@@ -16,13 +16,13 @@ func MakeRecorder(logType LogType, keys []string) Recorder {
 
 // MakeRecorder creates a Recorder
 func (r *Runner) MakeRecorder(logType LogType, keys []string) Recorder {
-	return Recorder{Runner: r, LogType: logType, Keys: NewKeys(keys)}
+	return Recorder{Runner: r, LogType: logType, Key: NewKey(keys)}
 }
 
 // PutRecord put a metric record to channel
 func (c Recorder) PutRecord(v1, v2 int64) {
 	if c.Checked {
-		c.Runner.PutMetricLine(c.Keys.Keys, c.LogType, v1, v2)
+		c.Runner.AsyncPut(c.Key.Keys, c.LogType, v1, v2)
 	}
 }
 

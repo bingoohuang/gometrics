@@ -121,7 +121,6 @@ func (r *Runner) afterMetricsInterval() bool { return time.Since(r.startTime) > 
 
 func (r *Runner) logMetrics() {
 	r.startTime = time.Now()
-	tt := time.Now().Format("20060102150405000")
 
 	for k, pv := range r.cache {
 		v := *pv
@@ -135,8 +134,7 @@ func (r *Runner) logMetrics() {
 			v.V1 = v.V2
 		}
 
-		v.Time = tt
-		r.writeLog(r.MetricsLogfile, util.JSONCompact(v))
+		r.writeLog(r.MetricsLogfile, v)
 
 		if v.LogType.isSimple() {
 			delete(r.cache, k)
@@ -147,10 +145,14 @@ func (r *Runner) logMetrics() {
 	}
 }
 
-func (r *Runner) writeLog(file io.Writer, content string) {
+func (r *Runner) writeLog(file io.Writer, v Line) {
 	if file == nil {
 		return
 	}
+
+	v.Time = time.Now().Format("20060102150405000") // yyyyMMddHHmmssSSS
+	v.Hostname = util.Hostname
+	content := util.JSONCompact(v)
 
 	if _, err := file.Write([]byte(content + "\n")); err != nil {
 		logrus.Warnf("fail to write log of metrics, error %+v", err)
@@ -172,14 +174,11 @@ func (r *Runner) mergeLog(l Line) {
 }
 
 func (r *Runner) logHB() {
-	v := Line{
-		Time:     time.Now().Format("20060102150405000"),
-		Key:      r.AppName + ".hb",
-		LogType:  HB,
-		V1:       1, // nolint gomnd
-		Hostname: Hostname,
-	}
-	r.writeLog(r.HBLogfile, util.JSONCompact(v))
+	r.writeLog(r.HBLogfile, Line{
+		Key:     r.AppName + ".hb",
+		LogType: HB,
+		V1:      1, // nolint gomnd
+	})
 }
 
 func (l *Line) updateMinMax(n Line) {
@@ -197,23 +196,13 @@ func (l *Line) updateMinMax(n Line) {
 		ratio = 100
 	}
 
-	if n.LogType.isUseCurrentValue4MinMax() {
+	if n.LogType.isUseCurrent4MinMax() {
 		ratio *= n.V1 / n.V2
 	} else {
 		ratio *= uv1 / uv2
 	}
 
-	min := curMin
-	if min < 0 || min > ratio {
-		min = ratio
-	}
-
-	max := curMax
-	if max < 0 || ratio > max {
-		max = ratio
-	}
-
-	l.update(uv1, uv2, min, max)
+	l.update(uv1, uv2, Min(curMin, ratio), Max(curMax, ratio))
 }
 
 func (l *Line) update(v1, v2, min, max int64) {
@@ -221,4 +210,22 @@ func (l *Line) update(v1, v2, min, max int64) {
 	l.V2 = v2
 	l.Min = min
 	l.Max = max
+}
+
+// Max returns the max of two number
+func Max(max, v int64) int64 {
+	if max < 0 || v > max {
+		return v
+	}
+
+	return max
+}
+
+// Min returns the min of two number
+func Min(min, v int64) int64 {
+	if min < 0 || v < min {
+		return v
+	}
+
+	return min
 }

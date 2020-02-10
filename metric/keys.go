@@ -5,22 +5,22 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Keys defines a slice of keys
-type Keys struct {
+// Key defines a slice of keys
+type Key struct {
 	Keys    []string
 	Checked bool
 }
 
-// NewKeys create Keys
-func NewKeys(keys []string) Keys {
-	ks := Keys{Keys: keys}
+// NewKey create Keys
+func NewKey(keys []string) Key {
+	ks := Key{Keys: keys}
 	ks.Check()
 
 	return ks
 }
 
 // Check checks the validation of keys
-func (k *Keys) Check() {
+func (k *Key) Check() {
 	k.Checked = true
 
 	if len(k.Keys) == 0 {
@@ -40,7 +40,7 @@ func (k *Keys) Check() {
 
 const strippedChars = `" .,|#\` + "\t\r\n"
 
-func (k *Keys) validateKey(i int, key string) bool {
+func (k *Key) validateKey(i int, key string) bool {
 	if key == "" {
 		logrus.Warn("Key can not be empty")
 

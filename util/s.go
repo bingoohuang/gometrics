@@ -3,9 +3,17 @@ package util
 import (
 	"bytes"
 	"encoding/json"
+	"os"
 	"strings"
 	"time"
 )
+
+// Hostname stores hostname
+var Hostname string // nolint
+
+func init() { // nolint
+	Hostname, _ = os.Hostname()
+}
 
 // StripAny strips any Unicode code points in chars are within s.
 func StripAny(s, chars string) string {

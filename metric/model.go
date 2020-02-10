@@ -1,7 +1,6 @@
 package metric
 
 import (
-	"os"
 	"strings"
 )
 
@@ -22,12 +21,15 @@ const (
 	// KeyCUR CUR 日志类型
 	KeyCUR LogType = "CUR"
 
-	// HB 特殊处理，每20s记录一次
+	// HB 特殊处理，每?s记录一次
 	HB LogType = "HB"
 )
 
 // isSimple 是否简单的值，值与值之间，不需要有累计等关系
 func (lt LogType) isSimple() bool { return lt == KeyCUR }
+
+// isUseCurrent4MinMax 是否使用当前v1/v2值来生成，还是使用累积值来生成min/max值
+func (lt LogType) isUseCurrent4MinMax() bool { return lt == KeyRT }
 
 // isPercent 是否是百分比类型
 func (lt LogType) isPercent() bool {
@@ -38,9 +40,6 @@ func (lt LogType) isPercent() bool {
 
 	return false
 }
-
-// isUseCurrentValue4MinMax 是否使用当前v1/v2值来生成，还是使用累积值来生成min/max值
-func (lt LogType) isUseCurrentValue4MinMax() bool { return lt == KeyRT }
 
 // Line represents a metric rotate line structure in rotate file
 type Line struct {
@@ -54,25 +53,17 @@ type Line struct {
 	Max      int64   `json:"max"`
 }
 
-// Hostname stores hostname
-var Hostname string // nolint
-
-func init() { // nolint
-	Hostname, _ = os.Hostname()
-}
-
-// PutMetricLine new a Line
-func (r *Runner) PutMetricLine(keys []string, logType LogType, v1, v2 int64) {
+// AsyncPut new a metric line
+func (r *Runner) AsyncPut(keys []string, logType LogType, v1, v2 int64) {
 	select {
 	case r.C <- Line{
-		Key:      strings.Join(keys, "#"),
-		Hostname: Hostname,
-		LogType:  logType,
-		V1:       v1,
-		V2:       v2,
-		Min:      -1,
-		Max:      -1,
+		Key:     strings.Join(keys, "#"),
+		LogType: logType,
+		V1:      v1,
+		V2:      v2,
+		Min:     -1,
+		Max:     -1,
 	}: // processed already
-	default: // bypass
+	default: // bypass, async
 	}
 }
