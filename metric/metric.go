@@ -6,7 +6,6 @@ import "time"
 type Recorder struct {
 	Runner  *Runner
 	LogType LogType
-	Rate    bool
 	Keys
 }
 
@@ -21,9 +20,9 @@ func (r *Runner) MakeRecorder(logType LogType, keys []string) Recorder {
 }
 
 // PutRecord put a metric record to channel
-func (c Recorder) PutRecord(v1, v2, min, max int64) {
+func (c Recorder) PutRecord(v1, v2 int64) {
 	if c.Checked {
-		c.Runner.PutMetricLine(c.Keys.Keys, c.LogType, v1, v2, min, max)
+		c.Runner.PutMetricLine(c.Keys.Keys, c.LogType, v1, v2)
 	}
 }
 
@@ -45,9 +44,7 @@ func (r *Runner) RT(keys ...string) RTRecorder {
 func (r RTRecorder) Record() { r.RecordSince(r.Start) }
 
 // RecordSince records a round-time since start
-func (r RTRecorder) RecordSince(start time.Time) {
-	r.PutRecord(time.Since(start).Milliseconds(), 1, 0, 0)
-}
+func (r RTRecorder) RecordSince(start time.Time) { r.PutRecord(time.Since(start).Milliseconds(), 1) }
 
 // QPSRecorder is a QPS recorder
 type QPSRecorder struct{ Recorder }
@@ -61,7 +58,7 @@ func (r *Runner) QPS(keys ...string) QPSRecorder { return QPSRecorder{r.MakeReco
 // Record records a request
 func (q QPSRecorder) Record(times int64) {
 	if times > 0 {
-		q.PutRecord(times, 0, 0, 0)
+		q.PutRecord(times, 0)
 	}
 }
 
@@ -77,14 +74,10 @@ func (r *Runner) SuccessRate(keys ...string) SuccessRateRecorder {
 }
 
 // IncrSuccess increment success count
-func (c SuccessRateRecorder) IncrSuccess() {
-	c.PutRecord(1, 0, 0, 0) // nolint gomnd
-}
+func (c SuccessRateRecorder) IncrSuccess() { c.PutRecord(1, 0) } // nolint gomnd
 
 // IncrTotal increment total
-func (c SuccessRateRecorder) IncrTotal() {
-	c.PutRecord(0, 1, 0, 0) // nolint gomnd
-}
+func (c SuccessRateRecorder) IncrTotal() { c.PutRecord(0, 1) } // nolint gomnd
 
 // FailRateRecorder record success rate
 type FailRateRecorder struct{ Recorder }
@@ -98,14 +91,10 @@ func (r *Runner) FailRate(keys ...string) FailRateRecorder {
 }
 
 // IncrFail increment success count
-func (c FailRateRecorder) IncrFail() {
-	c.PutRecord(1, 0, 0, 0) // nolint gomnd
-}
+func (c FailRateRecorder) IncrFail() { c.PutRecord(1, 0) } // nolint gomnd
 
 // IncrTotal increment total
-func (c FailRateRecorder) IncrTotal() {
-	c.PutRecord(0, 1, 0, 0) // nolint gomnd
-}
+func (c FailRateRecorder) IncrTotal() { c.PutRecord(0, 1) } // nolint gomnd
 
 // HitRateRecorder record hit rate
 type HitRateRecorder struct{ Recorder }
@@ -119,14 +108,10 @@ func (r *Runner) HitRate(keys ...string) HitRateRecorder {
 }
 
 // IncrHit increment success count
-func (c HitRateRecorder) IncrHit() {
-	c.PutRecord(1, 0, 0, 0) // nolint gomnd
-}
+func (c HitRateRecorder) IncrHit() { c.PutRecord(1, 0) } // nolint gomnd
 
 // IncrTotal increment total
-func (c HitRateRecorder) IncrTotal() {
-	c.PutRecord(0, 1, 0, 0) // nolint gomnd
-}
+func (c HitRateRecorder) IncrTotal() { c.PutRecord(0, 1) } // nolint gomnd
 
 // CurRecorder record 瞬时值(Gauge)
 type CurRecorder struct{ Recorder }
@@ -139,7 +124,5 @@ func (r *Runner) Cur(keys ...string) CurRecorder {
 	return CurRecorder{r.MakeRecorder(KeyCUR, keys)}
 }
 
-// Record record  v1
-func (c CurRecorder) Record(v1 int64) {
-	c.PutRecord(v1, 0, 0, 0)
-}
+// Record records v1
+func (c CurRecorder) Record(v1 int64) { c.PutRecord(v1, 0) }

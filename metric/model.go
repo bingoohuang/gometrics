@@ -56,7 +56,7 @@ func init() { // nolint
 }
 
 // PutMetricLine new a Line
-func (r *Runner) PutMetricLine(keys []string, logType LogType, v1, v2, min, max int64) {
+func (r *Runner) PutMetricLine(keys []string, logType LogType, v1, v2 int64) {
 	select {
 	case r.C <- Line{
 		Key:      strings.Join(keys, "#"),
@@ -64,8 +64,8 @@ func (r *Runner) PutMetricLine(keys []string, logType LogType, v1, v2, min, max 
 		LogType:  logType,
 		V1:       v1,
 		V2:       v2,
-		Min:      min,
-		Max:      max,
+		Min:      -1,
+		Max:      -1,
 	}: // processed already
 	default: // bypass
 	}

@@ -48,7 +48,7 @@ func makeCacheKey(key string, logType LogType) cacheKey {
 
 // NewRunner creates a Runner
 func NewRunner(ofs ...OptionFn) *Runner {
-	o := createOption(ofs)
+	o := CreateOption(ofs...)
 
 	return &Runner{
 		AppName:         o.AppName,
@@ -184,25 +184,17 @@ func (r *Runner) logHB() {
 }
 
 func (l *Line) updateMinMax(n Line) {
-	uv1 := l.V1 + n.V1
-	uv2 := l.V2 + n.V2
-	curMin := l.Min
-	curMax := l.Max
-
-	percentType := n.LogType.isPercent()
+	uv1, uv2, curMin, curMax := l.V1+n.V1, l.V2+n.V2, l.Min, l.Max
 
 	// 百分比类型时，uv1 > uv2没意义（可能是分子还没更新，分母累积提前到达）
-	if n.V2 <= 0 || percentType && uv1 > uv2 {
-		l.V1 = uv1
-		l.V2 = uv2
-		l.Min = curMin
-		l.Max = curMax
+	if n.V2 <= 0 || n.LogType.isPercent() && uv1 > uv2 {
+		l.update(uv1, uv2, curMin, curMax)
 
 		return
 	}
 
 	var ratio int64 = 1
-	if percentType {
+	if n.LogType.isPercent() {
 		ratio = 100
 	}
 
@@ -213,17 +205,21 @@ func (l *Line) updateMinMax(n Line) {
 	}
 
 	min := curMin
-	if curMin < 0 || ratio < curMin {
+	if min < 0 || min > ratio {
 		min = ratio
 	}
 
 	max := curMax
-	if curMax < 0 || curMax < ratio {
+	if max < 0 || ratio > max {
 		max = ratio
 	}
 
-	l.V1 = uv1
-	l.V2 = uv2
+	l.update(uv1, uv2, min, max)
+}
+
+func (l *Line) update(v1, v2, min, max int64) {
+	l.V1 = v1
+	l.V2 = v2
 	l.Min = min
 	l.Max = max
 }
