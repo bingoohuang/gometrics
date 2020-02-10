@@ -9,12 +9,18 @@ import (
 type LogType string
 
 const (
-	KeyRT          LogType = "RT"
-	KeyQPS         LogType = "QPS"
+	// KeyRT RT 日志类型
+	KeyRT LogType = "RT"
+	// KeyQPS QPS 日志类型
+	KeyQPS LogType = "QPS"
+	// KeySuccessRate SuccessRate 日志类型
 	KeySuccessRate LogType = "SUCCESS_RATE"
-	KeyFailRate    LogType = "FAIL_RATE"
-	KeyHitRate     LogType = "HIT_RATE"
-	KeyCUR         LogType = "CUR"
+	// KeyFailRate FailRate 日志类型
+	KeyFailRate LogType = "FAIL_RATE"
+	// KeyHitRate HitRate 日志类型
+	KeyHitRate LogType = "HIT_RATE"
+	// KeyCUR CUR 日志类型
+	KeyCUR LogType = "CUR"
 
 	// HB 特殊处理，每20s记录一次
 	HB LogType = "HB"

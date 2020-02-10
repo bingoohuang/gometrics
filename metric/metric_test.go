@@ -9,7 +9,7 @@ import (
 )
 
 // nolint gomnd
-func TestRTRecorder_Record(t *testing.T) {
+func TestRT(t *testing.T) {
 	rt1 := metric.RT("key1")
 	rt2 := metric.RT("key1", "key2")
 	rt3 := metric.RT("key1", "key2", "key3")
@@ -43,11 +43,24 @@ func TestRTRecorder_Record(t *testing.T) {
 	<-c
 }
 
+func BenchmarkRT(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		metric.RT("key1", "key2", "key3").Record()
+	}
+}
+
 // nolint gomnd
-func TestQPS_Record(t *testing.T) {
+func TestQPS(t *testing.T) {
 	metric.QPS("key1").Record(1)
 	metric.QPS("key1", "key2").Record(1)
 	metric.QPS("key1", "key2", "key3").Record(1)
+}
+
+// nolint gomnd
+func BenchmarkQPS(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		metric.QPS("key1", "key2", "key3").Record(1)
+	}
 }
 
 func TestSuccessRate(t *testing.T) {
@@ -56,10 +69,28 @@ func TestSuccessRate(t *testing.T) {
 	sr.IncrTotal()
 }
 
+func BenchmarkSuccessRate(b *testing.B) {
+	sr := metric.SuccessRate("key1", "key2", "key3")
+
+	for i := 0; i < b.N; i++ {
+		sr.IncrSuccess()
+		sr.IncrTotal()
+	}
+}
+
 func TestFailRate(t *testing.T) {
 	fr := metric.FailRate("key1", "key2", "key3")
 	fr.IncrFail()
 	fr.IncrTotal()
+}
+
+func BenchmarkFailRate(b *testing.B) {
+	fr := metric.FailRate("key1", "key2", "key3")
+
+	for i := 0; i < b.N; i++ {
+		fr.IncrFail()
+		fr.IncrTotal()
+	}
 }
 
 func TestHitRate(t *testing.T) {
@@ -68,8 +99,17 @@ func TestHitRate(t *testing.T) {
 	fr.IncrTotal()
 }
 
+func BenchmarkHitRate(b *testing.B) {
+	fr := metric.HitRate("key1", "key2", "key3")
+
+	for i := 0; i < b.N; i++ {
+		fr.IncrHit()
+		fr.IncrTotal()
+	}
+}
+
 // nolint gomnd
-func TestCurRecorder_Record(t *testing.T) {
+func TestCur(t *testing.T) {
 	c1 := metric.Cur("key1")
 	c2 := metric.Cur("key1", "key2")
 	c3 := metric.Cur("key1", "key2", "key3")
@@ -81,4 +121,13 @@ func TestCurRecorder_Record(t *testing.T) {
 	c1.Record(4)
 	c2.Record(5)
 	c3.Record(6)
+}
+
+// nolint gomnd
+func BenchmarkCur(b *testing.B) {
+	c := metric.Cur("key1", "key2", "key3")
+
+	for i := 0; i < b.N; i++ {
+		c.Record(rand.Int63n(10))
+	}
 }

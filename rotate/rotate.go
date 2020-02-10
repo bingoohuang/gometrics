@@ -54,7 +54,9 @@ const yyyyMMdd = "yyyy-MM-dd"
 // rotate if required
 func (f *File) rotate() error {
 	if f.file == nil {
-		_ = f.open()
+		if err := f.open(); err != nil {
+			return err
+		}
 	}
 
 	t := time.Now()
@@ -101,7 +103,7 @@ func NewFile(logPath string, maxBackups int) (*File, error) {
 
 	// force early failure if we can't open the file
 	if err := f.rotate(); err != nil {
-		return nil, err
+		return f, err
 	}
 
 	return f, nil

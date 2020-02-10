@@ -18,7 +18,7 @@ type Option struct {
 	MetricsInterval time.Duration `default:"1s" env:"METRICS_INTERVAL"`       // 每隔多少时间记录一次日志
 	HBInterval      time.Duration `default:"20s" env:"HB_INTERVAL"`           // 每隔多少时间记录一次心跳日志
 	ChanCap         int           `default:"1000" env:"CHAN_CAP"`             // 指标通道容量，当指标大量发送容量堆满时，自动扔弃
-	LogPath         string        `default:"/var/log/metrics" env:"LOG_PATH"` // 日志路径
+	LogPath         string        `default:"/tmp/log/metrics" env:"LOG_PATH"` // 日志路径
 	MaxBackups      int           `default:"7" env:"MAX_BACKUPS"`             // 最大保留天数
 }
 
@@ -40,8 +40,6 @@ func EnvOption(filenames ...string) OptionFn {
 		if err := env.Parse(o); err != nil {
 			logrus.Warnf("parse env to option error %+v", err)
 		}
-
-		o.SetDefaults()
 	}
 }
 

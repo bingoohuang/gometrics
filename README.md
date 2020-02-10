@@ -36,7 +36,7 @@ metrics golang client library.
     HB_INTERVAL = 20s
     # Metrics对象的处理容量，默认1000，来不及处理时，超额扔弃处理
     CHAN_CAP=1000
-    # 日志存放的目录，默认/var/log/metrics
+    # 日志存放的目录，默认/tmp/log/metrics
     LOG_PATH=/tmp/metricslog
     # 日志文件最大保留天数
     MAX_BACKUPS=7
@@ -142,6 +142,28 @@ $ tail -f /tmp/metricslog/metrics-key.bingoohuangapp.log
 {"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"HIT_RATE","v1":1,"v2":2,"min":0,"max":100}
 {"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"CUR","v1":100,"v2":0,"min":0,"max":0}
 {"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"RT","v1":193,"v2":1,"min":0,"max":811}
+```
+
+## benchmark
+
+```bash
+$ go test -bench=.  ./...                                                                               
+WARN[0000] loading env file error open .env: no such file or directory 
+INFO[0000] log file /tmp/log/metrics/metrics-key.44739.log created 
+INFO[0000] log file /tmp/log/metrics/metrics-hb.44739.log created 
+/Users/bingoo/GitHub/gometrics/metric
+goos: darwin
+goarch: amd64
+pkg: github.com/bingoohuang/gometrics/metric
+BenchmarkRT-12                   1803442               655 ns/op
+BenchmarkQPS-12                  2232487               538 ns/op
+BenchmarkSuccessRate-12          2175163               552 ns/op
+BenchmarkFailRate-12             2246766               516 ns/op
+BenchmarkHitRate-12              2110915               597 ns/op
+BenchmarkCur-12                  3023659               388 ns/op
+PASS
+ok      github.com/bingoohuang/gometrics/metric 11.385s
+
 ```
 
 ## cloc

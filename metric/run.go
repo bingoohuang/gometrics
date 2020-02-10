@@ -67,7 +67,7 @@ func createRotateFile(o *Option, prefix string) *rotate.File {
 	lf, err := rotate.NewFile(f, o.MaxBackups)
 
 	if err != nil {
-		logrus.Warnf("fail to new logMetrics file %s", f)
+		logrus.Warnf("fail to new logMetrics file %s, error %v", f, err)
 	}
 
 	return lf
@@ -117,9 +117,7 @@ func (r *Runner) run() {
 	}
 }
 
-func (r *Runner) afterMetricsInterval() bool {
-	return time.Since(r.startTime) > r.MetricsInterval
-}
+func (r *Runner) afterMetricsInterval() bool { return time.Since(r.startTime) > r.MetricsInterval }
 
 func (r *Runner) logMetrics() {
 	r.startTime = time.Now()
@@ -154,7 +152,7 @@ func (r *Runner) writeLog(file io.Writer, content string) {
 	}
 
 	if _, err := file.Write([]byte(content + "\n")); err != nil {
-		logrus.Warnf("fail to write logMetrics, error %v", err)
+		logrus.Warnf("fail to write log of metrics, error %+v", err)
 	}
 }
 
