@@ -126,7 +126,13 @@ func YourBusinessDemoCur() {
 
 ### Demo
 
-1. build `go fmt ./...;goimports -w .;golangci-lint run --enable-all;golint . ;go install -ldflags="-s -w" ./...`
+1. build `go install -ldflags="-s -w" ./...`
+1. or build for linux 
+
+    - `CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go install -ldflags="-s -w" ./...`
+    - `upx ~/go/bin/linux_amd64/gometricsdemo`
+    - `bssh scp -H A-gw-test2 ~/go/bin/linux_amd64/gometricsdemo r:./bingoohuang/gometrics`
+
 1. run ` ENV_FILE=testdata/golden.env gometricsdemo`
 
 ```bash
