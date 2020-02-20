@@ -1,6 +1,7 @@
 package rotate
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -43,9 +44,7 @@ func NewFile(filename string, maxBackups int) (*File, error) {
 func (o *File) open() error {
 	f, err := os.OpenFile(o.Filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
-		logrus.Warnf("log file %s created error %v", o.Filename, err)
-
-		return err
+		return fmt.Errorf("log file %s created error %w", o.Filename, err)
 	}
 
 	o.file = f
@@ -68,8 +67,7 @@ func (o *File) doRotate(rotated string, outMaxBackups []string) error {
 		}
 
 		if err := os.Rename(o.Filename, rotated); err != nil {
-			logrus.Infof("rotate %s to %s error %v", o.Filename, rotated, err)
-			return err
+			return fmt.Errorf("rotate %s to %s error %w", o.Filename, rotated, err)
 		}
 
 		logrus.Infof("%s rotated to %s", o.Filename, rotated)
@@ -81,7 +79,7 @@ func (o *File) doRotate(rotated string, outMaxBackups []string) error {
 
 	for _, old := range outMaxBackups {
 		if err := os.Remove(old); err != nil {
-			logrus.Warnf("remove log file %s before max backup days %d error %v", old, o.MaxBackups, err)
+			return fmt.Errorf("remove log file %s before max backup days %d error %v", old, o.MaxBackups, err)
 		}
 
 		logrus.Infof("%s before max backup days %d removed", old, o.MaxBackups)
