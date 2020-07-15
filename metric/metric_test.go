@@ -56,10 +56,22 @@ func TestQPS(t *testing.T) {
 	metric.QPS("key1", "key2", "key3").Record(1)
 }
 
+func TestQPS1(t *testing.T) {
+	metric.QPS1("key1")
+	metric.QPS1("key1", "key2")
+	metric.QPS1("key1", "key2", "key3")
+}
+
 // nolint gomnd
 func BenchmarkQPS(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		metric.QPS("key1", "key2", "key3").Record(1)
+	}
+}
+
+func BenchmarkQPS1(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		metric.QPS1("key1", "key2", "key3")
 	}
 }
 

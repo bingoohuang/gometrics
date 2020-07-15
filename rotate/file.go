@@ -30,7 +30,7 @@ func NewFile(filename string, maxBackups int) (*File, error) {
 		dir:        filepath.Dir(filename),
 	}
 
-	if err := os.MkdirAll(o.dir, 0755); err != nil {
+	if err := os.MkdirAll(o.dir, 0o755); err != nil {
 		return nil, err
 	}
 
@@ -42,7 +42,7 @@ func NewFile(filename string, maxBackups int) (*File, error) {
 }
 
 func (o *File) open() error {
-	f, err := os.OpenFile(o.Filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	f, err := os.OpenFile(o.Filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644)
 	if err != nil {
 		return fmt.Errorf("log file %s created error %w", o.Filename, err)
 	}
@@ -147,7 +147,6 @@ func (o *File) write(d []byte, flush bool) (int, error) {
 	}
 
 	n, err := o.file.Write(d)
-
 	if err != nil {
 		return n, err
 	}

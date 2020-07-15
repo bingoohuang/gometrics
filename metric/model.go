@@ -4,34 +4,34 @@ import (
 	"strings"
 )
 
-// LogType means the logMetrics type
+// LogType means the logMetrics type.
 type LogType string
 
 const (
-	// KeyRT RT 日志类型
+	// KeyRT RT 日志类型.
 	KeyRT LogType = "RT"
-	// KeyQPS QPS 日志类型
+	// KeyQPS QPS 日志类型.
 	KeyQPS LogType = "QPS"
-	// KeySuccessRate SuccessRate 日志类型
+	// KeySuccessRate SuccessRate 日志类型.
 	KeySuccessRate LogType = "SUCCESS_RATE"
-	// KeyFailRate FailRate 日志类型
+	// KeyFailRate FailRate 日志类型.
 	KeyFailRate LogType = "FAIL_RATE"
-	// KeyHitRate HitRate 日志类型
+	// KeyHitRate HitRate 日志类型.
 	KeyHitRate LogType = "HIT_RATE"
-	// KeyCUR CUR 日志类型
+	// KeyCUR CUR 日志类型.
 	KeyCUR LogType = "CUR"
 
-	// HB 特殊处理，每?s记录一次
+	// HB 特殊处理，每?s记录一次.
 	HB LogType = "HB"
 )
 
-// isSimple 是否简单的值，值与值之间，不需要有累计等关系
+// isSimple 是否简单的值，值与值之间，不需要有累计等关系.
 func (lt LogType) isSimple() bool { return lt == KeyCUR }
 
-// isUseCurrent4MinMax 是否使用当前v1/v2值来生成，还是使用累积值来生成min/max值
+// isUseCurrent4MinMax 是否使用当前v1/v2值来生成，还是使用累积值来生成min/max值.
 func (lt LogType) isUseCurrent4MinMax() bool { return lt == KeyRT }
 
-// isPercent 是否是百分比类型
+// isPercent 是否是百分比类型.
 func (lt LogType) isPercent() bool {
 	switch lt {
 	case KeySuccessRate, KeyFailRate, KeyHitRate:
@@ -41,7 +41,7 @@ func (lt LogType) isPercent() bool {
 	return false
 }
 
-// Line represents a metric rotate line structure in rotate file
+// Line represents a metric rotate line structure in rotate file.
 type Line struct {
 	Time     string  `json:"time"` // yyyyMMddHHmmssSSS
 	Key      string  `json:"key"`  // {{k1}}#{{k2}}#{{k3}}
@@ -53,7 +53,7 @@ type Line struct {
 	Max      int64   `json:"max"`
 }
 
-// AsyncPut new a metric line
+// AsyncPut new a metric line.
 func (r *Runner) AsyncPut(keys []string, logType LogType, v1, v2 int64) {
 	select {
 	case r.C <- Line{
@@ -63,7 +63,7 @@ func (r *Runner) AsyncPut(keys []string, logType LogType, v1, v2 int64) {
 		V2:      v2,
 		Min:     -1,
 		Max:     -1,
-	}: // processed already
-	default: // bypass, async
+	}: // processed already.
+	default: // bypass, async.
 	}
 }

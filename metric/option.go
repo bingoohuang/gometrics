@@ -12,7 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Option defines the option for runner
+// Option defines the option for runner.
 type Option struct {
 	AppName         string        `env:"APP_NAME"`                            // 应用名称，默认使用当前进程的PID
 	MetricsInterval time.Duration `default:"1s" env:"METRICS_INTERVAL"`       // 每隔多少时间记录一次日志
@@ -22,10 +22,10 @@ type Option struct {
 	MaxBackups      int           `default:"7" env:"MAX_BACKUPS"`             // 最大保留天数
 }
 
-// OptionFn defines the function for options setting
+// OptionFn defines the function for options setting.
 type OptionFn func(o *Option)
 
-// EnvOption sets the options from env
+// EnvOption sets the options from env.
 func EnvOption(filenames ...string) OptionFn {
 	return func(o *Option) {
 		envFile := os.Getenv("ENV_FILE")
@@ -43,22 +43,22 @@ func EnvOption(filenames ...string) OptionFn {
 	}
 }
 
-// AppName sets the app name
+// AppName sets the app name.
 func AppName(v string) OptionFn { return func(o *Option) { o.AppName = v } }
 
-// MetricsInterval sets the interval to write logMetrics line
+// MetricsInterval sets the interval to write logMetrics line.
 func MetricsInterval(v time.Duration) OptionFn { return func(o *Option) { o.MetricsInterval = v } }
 
-// ChanCap sets the capacity of metrics line channel
+// ChanCap sets the capacity of metrics line channel.
 func ChanCap(v int) OptionFn { return func(o *Option) { o.ChanCap = v } }
 
-// LogPath sets the logMetrics path of metrics logMetrics files
+// LogPath sets the logMetrics path of metrics logMetrics files.
 func LogPath(v string) OptionFn { return func(o *Option) { o.LogPath = v } }
 
-// MaxBackups sets max backups of metrics logMetrics files
+// MaxBackups sets max backups of metrics logMetrics files.
 func MaxBackups(v int) OptionFn { return func(o *Option) { o.MaxBackups = v } }
 
-// CreateOption creates Option by option functions
+// CreateOption creates Option by option functions.
 func CreateOption(ofs ...OptionFn) *Option {
 	o := &Option{}
 
@@ -71,7 +71,7 @@ func CreateOption(ofs ...OptionFn) *Option {
 	return o
 }
 
-// SetDefaults set the default values to Option
+// SetDefaults set the default values to Option.
 func (o *Option) SetDefaults() {
 	if err := defaults.Set(o); err != nil {
 		logrus.Warnf("defaults set error %v", err)

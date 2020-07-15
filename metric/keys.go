@@ -5,13 +5,13 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Key defines a slice of keys
+// Key defines a slice of keys.
 type Key struct {
 	Keys    []string
 	Checked bool
 }
 
-// NewKey create Keys
+// NewKey create Keys.
 func NewKey(keys []string) Key {
 	ks := Key{Keys: keys}
 	ks.Check()
@@ -19,7 +19,7 @@ func NewKey(keys []string) Key {
 	return ks
 }
 
-// Check checks the validation of keys
+// Check checks the validation of keys.
 func (k *Key) Check() {
 	k.Checked = true
 

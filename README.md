@@ -13,7 +13,7 @@ metrics golang client library.
 5 | HIT_RATE| 命中率
 6 | CUR | 瞬时值
 
-## HB 
+## HB
 
 心跳
 
@@ -26,7 +26,7 @@ metrics golang client library.
 ### 准备参数
 
 1. 通过.env环境文件设置，优先级最高。在当前目录下创建.env文件，设定一些参数， eg.
-        
+
     ```dotenv
     # 应用名称，默认使用当前pid
     APP_NAME=bingoohuangapp
@@ -55,13 +55,13 @@ metrics golang client library.
 ```go
 func YourBusinessDemo1() {
     defer gometrics.RT("key1", "key2", "key3").Record()
-    
+
     // business logic
 }
 
 func YourBusinessDemo2() {
     rt := gometrics.RT("key1", "key2", "key3")
-    
+
     // business logic
     start := time.Now()
     // ...
@@ -75,7 +75,14 @@ func YourBusinessDemo2() {
 func YourBusinessDemoQPS() {
     gometrics.QPS("key1", "key2", "key3").Record(1 /* 业务量 */ )
 }
+```
 
+or in simplified way:
+
+```go
+func YourBusinessDemoQPS() {
+    gometrics.QPS1("key1", "key2", "key3")
+}
 ```
 
 ### SUCCESS_RATE 成功率
@@ -127,23 +134,23 @@ func YourBusinessDemoCur() {
 ### Demo
 
 1. build `go install -ldflags="-s -w" ./...`
-1. or build for linux 
+1. or build for linux
 
     - `CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go install -ldflags="-s -w" ./...`
     - `upx ~/go/bin/linux_amd64/gometricsdemo`
     - `bssh scp -H A-gw-test2 ~/go/bin/linux_amd64/gometricsdemo r:./bingoohuang/gometrics`
 
-1. run ` ENV_FILE=testdata/golden.env gometricsdemo`
+1. run `ENV_FILE=testdata/golden.env gometricsdemo`
 
 ```bash
-$ tail -f /tmp/metricslog/metrics-hb.bingoohuangapp.log  
+$ tail -f /tmp/metricslog/metrics-hb.bingoohuangapp.log
 {"time":"20200205162411000","key":"bingoohuangapp.hb","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
 {"time":"20200205162431000","key":"bingoohuangapp.hb","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
 {"time":"20200205162451000","key":"bingoohuangapp.hb","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
 ```
 
 ```bash
-$ tail -f /tmp/metricslog/metrics-key.bingoohuangapp.log   
+$ tail -f /tmp/metricslog/metrics-key.bingoohuangapp.log
 {"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"FAIL_RATE","v1":0,"v2":2,"min":0,"max":100}
 {"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"HIT_RATE","v1":1,"v2":2,"min":0,"max":100}
 {"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"CUR","v1":100,"v2":0,"min":0,"max":0}
@@ -153,10 +160,10 @@ $ tail -f /tmp/metricslog/metrics-key.bingoohuangapp.log
 ## benchmark
 
 ```bash
-$ go test -bench=.  ./...                                                                               
-WARN[0000] loading env file error open .env: no such file or directory 
-INFO[0000] log file /tmp/log/metrics/metrics-key.44739.log created 
-INFO[0000] log file /tmp/log/metrics/metrics-hb.44739.log created 
+$ go test -bench=.  ./...
+WARN[0000] loading env file error open .env: no such file or directory
+INFO[0000] log file /tmp/log/metrics/metrics-key.44739.log created
+INFO[0000] log file /tmp/log/metrics/metrics-hb.44739.log created
 /Users/bingoo/GitHub/gometrics/metric
 goos: darwin
 goarch: amd64
@@ -169,7 +176,6 @@ BenchmarkHitRate-12              2110915               597 ns/op
 BenchmarkCur-12                  3023659               388 ns/op
 PASS
 ok      github.com/bingoohuang/gometrics/metric 11.385s
-
 ```
 
 ## cloc

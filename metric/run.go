@@ -12,7 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// DefaultRunner is the default runner for metric recording
+// DefaultRunner is the default runner for metric recording.
 var DefaultRunner *Runner // nolint
 
 func init() { // nolint
@@ -20,7 +20,7 @@ func init() { // nolint
 	DefaultRunner.Start()
 }
 
-// Runner is a runner for metric rotate writing
+// Runner is a runner for metric rotate writing.
 type Runner struct {
 	startTime time.Time
 	AppName   string
@@ -46,7 +46,7 @@ func makeCacheKey(key string, logType LogType) cacheKey {
 	return cacheKey{Key: key, LogType: logType}
 }
 
-// NewRunner creates a Runner
+// NewRunner creates a Runner.
 func NewRunner(ofs ...OptionFn) *Runner {
 	o := CreateOption(ofs...)
 
@@ -65,7 +65,6 @@ func NewRunner(ofs ...OptionFn) *Runner {
 func createRotateFile(o *Option, prefix string) *rotate.File {
 	f := filepath.Join(o.LogPath, prefix+o.AppName+".log")
 	lf, err := rotate.NewFile(f, o.MaxBackups)
-
 	if err != nil {
 		logrus.Warnf("fail to new logMetrics file %s, error %v", f, err)
 	}
@@ -73,13 +72,13 @@ func createRotateFile(o *Option, prefix string) *rotate.File {
 	return lf
 }
 
-// Start starts the runner
+// Start starts the runner.
 func (r *Runner) Start() {
 	go r.run()
 	runtime.SetFinalizer(r, func(r *Runner) { r.Stop() })
 }
 
-// Stop stops the runner
+// Stop stops the runner.
 func (r *Runner) Stop() {
 	select {
 	case r.stop <- true:
@@ -129,7 +128,7 @@ func (r *Runner) logMetrics() {
 			continue
 		}
 
-		// 处理瞬间current > total的情况
+		// 处理瞬间current > total的情况.
 		if v.LogType.isPercent() && v.V1 > v.V2 {
 			v.V1 = v.V2
 		}
@@ -212,7 +211,7 @@ func (l *Line) update(v1, v2, min, max int64) {
 	l.Max = max
 }
 
-// Max returns the max of two number
+// Max returns the max of two number.
 func Max(max, v int64) int64 {
 	if max < 0 || v > max {
 		return v
@@ -221,7 +220,7 @@ func Max(max, v int64) int64 {
 	return max
 }
 
-// Min returns the min of two number
+// Min returns the min of two number.
 func Min(min, v int64) int64 {
 	if min < 0 || v < min {
 		return v
