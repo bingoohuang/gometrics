@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// nolint gomnd
 func TestEnvOption(t *testing.T) {
 	println(util.PickFirst(os.Getwd()))
 	var o Option

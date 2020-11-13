@@ -6,9 +6,8 @@ import (
 	"time"
 
 	"github.com/caarlos0/env/v6"
-	"github.com/joho/godotenv"
-
 	"github.com/creasty/defaults"
+	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )
 

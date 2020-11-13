@@ -8,11 +8,13 @@ import (
 	"time"
 )
 
-// Hostname stores hostname
-var Hostname string // nolint
+// Hostname stores hostname.
+var Hostname = hostname() // nolint
 
-func init() { // nolint
-	Hostname, _ = os.Hostname()
+func hostname() string {
+	v, _ := os.Hostname()
+
+	return v
 }
 
 // StripAny strips any Unicode code points in chars are within s.
@@ -28,13 +30,13 @@ func StripAny(s, chars string) string {
 	return strings.Map(filter, s)
 }
 
-// Esc escapes s to a human readable format
+// Esc escapes s to a human readable format.
 func Esc(s string) string {
 	j, _ := json.Marshal(s)
 	return string(j)[1 : len(j)-1]
 }
 
-// Abbr abbreviate s to max length
+// Abbr abbreviate s to max length.
 func Abbr(s string, max int, postfix string) string {
 	l := len(s)
 	if l <= max {
@@ -49,12 +51,12 @@ func Abbr(s string, max int, postfix string) string {
 	return postfix
 }
 
-// JSONCompact compact the JSON encoding of data silently
+// JSONCompact compact the JSON encoding of data silently.
 func JSONCompact(data interface{}) string {
 	return PickFirst(JSONCompactE(data))
 }
 
-// JSONCompactE compact the JSON encoding of data
+// JSONCompactE compact the JSON encoding of data.
 func JSONCompactE(data interface{}) (string, error) {
 	switch v := data.(type) {
 	case string:
@@ -81,32 +83,32 @@ func JSONCompactE(data interface{}) (string, error) {
 	}
 }
 
-// PickFirst ignores the error and returns s
+// PickFirst ignores the error and returns s.
 func PickFirst(s string, _ interface{}) string {
 	return s
 }
 
-// ConvertTimeLayout converts date time format in java style to go style
+// ConvertTimeLayout converts date time format in java style to go style.
 func ConvertTimeLayout(layout string) string {
 	l := layout
-	l = strings.Replace(l, "yyyy", "2006", -1)
-	l = strings.Replace(l, "yy", "06", -1)
-	l = strings.Replace(l, "MM", "01", -1)
-	l = strings.Replace(l, "dd", "02", -1)
-	l = strings.Replace(l, "HH", "15", -1)
-	l = strings.Replace(l, "mm", "04", -1)
-	l = strings.Replace(l, "ss", "05", -1)
-	l = strings.Replace(l, "SSS", "000", -1)
+	l = strings.ReplaceAll(l, "yyyy", "2006")
+	l = strings.ReplaceAll(l, "yy", "06")
+	l = strings.ReplaceAll(l, "MM", "01")
+	l = strings.ReplaceAll(l, "dd", "02")
+	l = strings.ReplaceAll(l, "HH", "15")
+	l = strings.ReplaceAll(l, "mm", "04")
+	l = strings.ReplaceAll(l, "ss", "05")
+	l = strings.ReplaceAll(l, "SSS", "000")
 
 	return l
 }
 
-// ParseTime 解析日期转字符串
+// ParseTime 解析日期转字符串.
 func ParseTime(d string, layout string) (time.Time, error) {
 	return time.Parse(ConvertTimeLayout(layout), d)
 }
 
-// FormatTime 日期转字符串
+// FormatTime 日期转字符串.
 func FormatTime(d time.Time, layout string) string {
 	return d.Format(ConvertTimeLayout(layout))
 }

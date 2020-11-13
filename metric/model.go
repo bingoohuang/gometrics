@@ -11,18 +11,18 @@ const (
 	// KeyRT RT 日志类型.
 	KeyRT LogType = "RT"
 	// KeyQPS QPS 日志类型.
-	KeyQPS LogType = "QPS"
+	KeyQPS = "QPS"
 	// KeySuccessRate SuccessRate 日志类型.
-	KeySuccessRate LogType = "SUCCESS_RATE"
+	KeySuccessRate = "SUCCESS_RATE"
 	// KeyFailRate FailRate 日志类型.
-	KeyFailRate LogType = "FAIL_RATE"
+	KeyFailRate = "FAIL_RATE"
 	// KeyHitRate HitRate 日志类型.
-	KeyHitRate LogType = "HIT_RATE"
+	KeyHitRate = "HIT_RATE"
 	// KeyCUR CUR 日志类型.
-	KeyCUR LogType = "CUR"
+	KeyCUR = "CUR"
 
 	// HB 特殊处理，每?s记录一次.
-	HB LogType = "HB"
+	HB = "HB"
 )
 
 // isSimple 是否简单的值，值与值之间，不需要有累计等关系.
@@ -36,9 +36,9 @@ func (lt LogType) isPercent() bool {
 	switch lt {
 	case KeySuccessRate, KeyFailRate, KeyHitRate:
 		return true
+	default:
+		return false
 	}
-
-	return false
 }
 
 // Line represents a metric rotate line structure in rotate file.

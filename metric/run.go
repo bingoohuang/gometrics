@@ -6,17 +6,16 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/bingoohuang/gometrics/util"
-
 	"github.com/bingoohuang/gometrics/rotate"
+	"github.com/bingoohuang/gometrics/util"
 	"github.com/sirupsen/logrus"
 )
 
 // DefaultRunner is the default runner for metric recording.
-var DefaultRunner *Runner // nolint
+var DefaultRunner *Runner = NewRunner(EnvOption())
 
-func init() { // nolint
-	DefaultRunner = NewRunner(EnvOption())
+// Start starts the default runner.
+func Start() {
 	DefaultRunner.Start()
 }
 
@@ -111,6 +110,7 @@ func (r *Runner) run() {
 			r.logHB()
 		case <-r.stop:
 			logrus.Info("runner stopped")
+
 			return
 		}
 	}
@@ -176,7 +176,7 @@ func (r *Runner) logHB() {
 	r.writeLog(r.HBLogfile, Line{
 		Key:     r.AppName + ".hb",
 		LogType: HB,
-		V1:      1, // nolint gomnd
+		V1:      1,
 	})
 }
 

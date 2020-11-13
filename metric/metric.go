@@ -80,10 +80,10 @@ func (r *Runner) SuccessRate(keys ...string) SuccessRateRecorder {
 }
 
 // IncrSuccess increment success count.
-func (c SuccessRateRecorder) IncrSuccess() { c.PutRecord(1, 0) } // nolint gomnd
+func (c SuccessRateRecorder) IncrSuccess() { c.PutRecord(1, 0) }
 
 // IncrTotal increment total.
-func (c SuccessRateRecorder) IncrTotal() { c.PutRecord(0, 1) } // nolint gomnd
+func (c SuccessRateRecorder) IncrTotal() { c.PutRecord(0, 1) }
 
 // FailRateRecorder record success rate.
 type FailRateRecorder struct{ Recorder }
@@ -97,10 +97,10 @@ func (r *Runner) FailRate(keys ...string) FailRateRecorder {
 }
 
 // IncrFail increment success count.
-func (c FailRateRecorder) IncrFail() { c.PutRecord(1, 0) } // nolint gomnd
+func (c FailRateRecorder) IncrFail() { c.PutRecord(1, 0) }
 
 // IncrTotal increment total.
-func (c FailRateRecorder) IncrTotal() { c.PutRecord(0, 1) } // nolint gomnd
+func (c FailRateRecorder) IncrTotal() { c.PutRecord(0, 1) }
 
 // HitRateRecorder record hit rate.
 type HitRateRecorder struct{ Recorder }
@@ -114,10 +114,10 @@ func (r *Runner) HitRate(keys ...string) HitRateRecorder {
 }
 
 // IncrHit increment success count.
-func (c HitRateRecorder) IncrHit() { c.PutRecord(1, 0) } // nolint gomnd
+func (c HitRateRecorder) IncrHit() { c.PutRecord(1, 0) }
 
 // IncrTotal increment total.
-func (c HitRateRecorder) IncrTotal() { c.PutRecord(0, 1) } // nolint gomnd
+func (c HitRateRecorder) IncrTotal() { c.PutRecord(0, 1) }
 
 // CurRecorder record 瞬时值(Gauge).
 type CurRecorder struct{ Recorder }

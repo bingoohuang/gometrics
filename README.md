@@ -4,22 +4,22 @@ metrics golang client library.
 
 ## metrics
 
-\# | TYPE  | Meaning
----|---|---
-1 |RT| 平均响应时间
-2| QPS| 业务量(次数)
-3 | SUCCESS_RATE | 成功率
-4 | FAIL_RATE|失败率
-5 | HIT_RATE| 命中率
-6 | CUR | 瞬时值
+\# | TYPE         | Meaning
+---|--------------|--------
+1  | RT           | 平均响应时间
+2  | QPS          | 业务量(次数)
+3  | SUCCESS_RATE | 成功率
+4  | FAIL_RATE    | 失败率
+5  | HIT_RATE     | 命中率
+6  | CUR          | 瞬时值
 
 ## HB
 
 心跳
 
-\# | TYPE  | Meaning
----|---|---
-1 |HB| 一次心跳
+\# | TYPE | Meaning
+---|------|--------
+1  | HB   | 一次心跳
 
 ## Client Usage
 
@@ -27,7 +27,7 @@ metrics golang client library.
 
 1. 通过.env环境文件设置，优先级最高。在当前目录下创建.env文件，设定一些参数， eg.
 
-    ```dotenv
+    ```properties
     # 应用名称，默认使用当前pid
     APP_NAME=bingoohuangapp
     # 写入指标日志的间隔时间，默认1s
@@ -53,14 +53,18 @@ metrics golang client library.
 ### RT 平均响应时间
 
 ```go
+import (
+	"github.com/bingoohuang/gometrics/metric"
+)
+
 func YourBusinessDemo1() {
-    defer gometrics.RT("key1", "key2", "key3").Record()
+    defer metric.RT("key1", "key2", "key3").Record()
 
     // business logic
 }
 
 func YourBusinessDemo2() {
-    rt := gometrics.RT("key1", "key2", "key3")
+    rt := metric.RT("key1", "key2", "key3")
 
     // business logic
     start := time.Now()
@@ -73,7 +77,7 @@ func YourBusinessDemo2() {
 
 ```go
 func YourBusinessDemoQPS() {
-    gometrics.QPS("key1", "key2", "key3").Record(1 /* 业务量 */ )
+    metric.QPS("key1", "key2", "key3").Record(1 /* 业务量 */ )
 }
 ```
 
@@ -81,7 +85,7 @@ or in simplified way:
 
 ```go
 func YourBusinessDemoQPS() {
-    gometrics.QPS1("key1", "key2", "key3")
+    metric.QPS1("key1", "key2", "key3")
 }
 ```
 
@@ -89,7 +93,7 @@ func YourBusinessDemoQPS() {
 
 ```go
 func YourBusinessDemoSuccessRate() {
-    sr := gometrics.SuccessRate("key1", "key2", "key3")
+    sr := metric.SuccessRate("key1", "key2", "key3")
     defer sr.IncrTotal()
 
     // business logic
@@ -101,7 +105,7 @@ func YourBusinessDemoSuccessRate() {
 
 ```go
 func YourBusinessDemoFailRate() {
-    fr := gometrics.FailRate("key1", "key2", "key3")
+    fr := metric.FailRate("key1", "key2", "key3")
     defer fr.IncrTotal()
 
     // business logic
@@ -113,7 +117,7 @@ func YourBusinessDemoFailRate() {
 
 ```go
 func YourBusinessDemoHitRate() {
-    fr := gometrics.HitRate("key1", "key2", "key3")
+    fr := metric.HitRate("key1", "key2", "key3")
     defer fr.IncrTotal()
 
     // business logic
@@ -126,7 +130,7 @@ func YourBusinessDemoHitRate() {
 ```go
 func YourBusinessDemoCur() {
     // business logic
-    gometrics.Cur("key1", "key2", "key3").Record(100)
+    metric.Cur("key1", "key2", "key3").Record(100)
     // business logic
 }
 ```

@@ -11,6 +11,7 @@ init:
 	export GOPROXY=https://goproxy.cn
 
 lint:
+	go mod tidy
 	gofumports -w .
 	gofumpt -w .
 	gofmt -s -w .

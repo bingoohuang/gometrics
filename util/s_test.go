@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/bingoohuang/gometrics/util"
-
 	"github.com/stretchr/testify/assert"
 )
 

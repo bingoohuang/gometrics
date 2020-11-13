@@ -8,7 +8,6 @@ import (
 	"github.com/bingoohuang/gometrics/metric"
 )
 
-// nolint gomnd
 func TestRT(t *testing.T) {
 	rt1 := metric.RT("key1")
 	rt2 := metric.RT("key1", "key2")
@@ -49,7 +48,6 @@ func BenchmarkRT(b *testing.B) {
 	}
 }
 
-// nolint gomnd
 func TestQPS(t *testing.T) {
 	metric.QPS("key1").Record(1)
 	metric.QPS("key1", "key2").Record(1)
@@ -62,7 +60,6 @@ func TestQPS1(t *testing.T) {
 	metric.QPS1("key1", "key2", "key3")
 }
 
-// nolint gomnd
 func BenchmarkQPS(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		metric.QPS("key1", "key2", "key3").Record(1)
@@ -120,7 +117,6 @@ func BenchmarkHitRate(b *testing.B) {
 	}
 }
 
-// nolint gomnd
 func TestCur(t *testing.T) {
 	c1 := metric.Cur("key1")
 	c2 := metric.Cur("key1", "key2")

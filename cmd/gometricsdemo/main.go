@@ -7,8 +7,9 @@ import (
 	"github.com/bingoohuang/gometrics/metric"
 )
 
-// nolint gomnd
 func main() {
+	metric.Start()
+
 	f := func() {
 		time.Sleep(100 + time.Duration(rand.Int31n(900))*time.Millisecond)
 	}
@@ -59,6 +60,5 @@ func main() {
 				metric.Cur("key1", "key2", "key3").Record(100)
 			}()
 		}
-
 	}
 }

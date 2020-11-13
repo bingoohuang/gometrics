@@ -13,7 +13,7 @@ type Key struct {
 
 // NewKey create Keys.
 func NewKey(keys []string) Key {
-	ks := Key{Keys: keys}
+	ks := Key{Keys: keys, Checked: false}
 	ks.Check()
 
 	return ks

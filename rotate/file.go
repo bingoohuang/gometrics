@@ -22,7 +22,7 @@ type File struct {
 	file    *os.File
 }
 
-// NewFile create a rotation option
+// NewFile create a rotation option.
 func NewFile(filename string, maxBackups int) (*File, error) {
 	o := &File{
 		Filename:   filename,
@@ -136,7 +136,7 @@ func (o *File) detectRotate(t time.Time) (rotated string, outMaxBackups []string
 	return rotated, outMaxBackups
 }
 
-// Close closes the file
+// Close closes the file.
 func (o *File) Close() error {
 	return o.close()
 }
@@ -158,12 +158,12 @@ func (o *File) write(d []byte, flush bool) (int, error) {
 	return n, err
 }
 
-// Write writes data to a file
+// Write writes data to a file.
 func (o *File) Write(d []byte) (int, error) {
 	return o.write(d, false)
 }
 
-// Flush flushes the file
+// Flush flushes the file.
 func (o *File) Flush() error {
 	return o.file.Sync()
 }
