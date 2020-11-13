@@ -131,7 +131,6 @@ func TestCur(t *testing.T) {
 	c3.Record(6)
 }
 
-// nolint gomnd
 func BenchmarkCur(b *testing.B) {
 	c := metric.Cur("key1", "key2", "key3")
 

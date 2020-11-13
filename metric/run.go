@@ -16,7 +16,15 @@ var DefaultRunner *Runner = NewRunner(EnvOption())
 
 // Start starts the default runner.
 func Start() {
+	o := DefaultRunner.option
+	DefaultRunner.MetricsLogfile = createRotateFile(o, "metrics-key.")
+	DefaultRunner.HBLogfile = createRotateFile(o, "metrics-hb.")
 	DefaultRunner.Start()
+}
+
+// Stop stops the default runner.
+func Stop() {
+	DefaultRunner.Stop()
 }
 
 // Runner is a runner for metric rotate writing.
@@ -33,7 +41,8 @@ type Runner struct {
 	MetricsLogfile io.Writer
 	HBLogfile      io.Writer
 
-	cache map[cacheKey]*Line
+	cache  map[cacheKey]*Line
+	option *Option
 }
 
 type cacheKey struct {
@@ -50,13 +59,12 @@ func NewRunner(ofs ...OptionFn) *Runner {
 	o := CreateOption(ofs...)
 
 	return &Runner{
+		option:          o,
 		AppName:         o.AppName,
 		MetricsInterval: o.MetricsInterval,
 		HBInterval:      o.HBInterval,
 		C:               make(chan Line, o.ChanCap),
 		stop:            make(chan bool, 1),
-		MetricsLogfile:  createRotateFile(o, "metrics-key."),
-		HBLogfile:       createRotateFile(o, "metrics-hb."),
 		cache:           make(map[cacheKey]*Line),
 	}
 }
