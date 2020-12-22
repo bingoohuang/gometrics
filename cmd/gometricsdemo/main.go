@@ -8,8 +8,6 @@ import (
 )
 
 func main() {
-	metric.Start()
-
 	f := func() {
 		time.Sleep(100 + time.Duration(rand.Int31n(900))*time.Millisecond)
 	}

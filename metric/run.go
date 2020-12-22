@@ -12,7 +12,7 @@ import (
 )
 
 // DefaultRunner is the default runner for metric recording.
-var DefaultRunner *Runner = NewRunner(EnvOption())
+var DefaultRunner = NewRunner(EnvOption())
 
 // Start starts the default runner.
 func Start() {
@@ -58,7 +58,7 @@ func makeCacheKey(key string, logType LogType) cacheKey {
 func NewRunner(ofs ...OptionFn) *Runner {
 	o := CreateOption(ofs...)
 
-	return &Runner{
+	r := &Runner{
 		option:          o,
 		AppName:         o.AppName,
 		MetricsInterval: o.MetricsInterval,
@@ -67,6 +67,12 @@ func NewRunner(ofs ...OptionFn) *Runner {
 		stop:            make(chan bool, 1),
 		cache:           make(map[cacheKey]*Line),
 	}
+
+	r.Start()
+
+	runtime.SetFinalizer(r, func(r *Runner) { r.Stop() })
+
+	return r
 }
 
 func createRotateFile(o *Option, prefix string) *rotate.File {
@@ -82,7 +88,6 @@ func createRotateFile(o *Option, prefix string) *rotate.File {
 // Start starts the runner.
 func (r *Runner) Start() {
 	go r.run()
-	runtime.SetFinalizer(r, func(r *Runner) { r.Stop() })
 }
 
 // Stop stops the runner.
