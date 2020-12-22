@@ -58,6 +58,7 @@ import (
 )
 
 func YourBusinessDemo1() {
+	// 这里使用defer是为了在函数结束时，计算耗时
     defer metric.RT("key1", "key2", "key3").Record()
 
     // business logic
