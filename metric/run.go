@@ -16,9 +16,6 @@ var DefaultRunner = NewRunner(EnvOption())
 
 // Start starts the default runner.
 func Start() {
-	o := DefaultRunner.option
-	DefaultRunner.MetricsLogfile = createRotateFile(o, "metrics-key.")
-	DefaultRunner.HBLogfile = createRotateFile(o, "metrics-hb.")
 	DefaultRunner.Start()
 }
 
@@ -87,6 +84,10 @@ func createRotateFile(o *Option, prefix string) *rotate.File {
 
 // Start starts the runner.
 func (r *Runner) Start() {
+	o := r.option
+	r.MetricsLogfile = createRotateFile(o, "metrics-key.")
+	r.HBLogfile = createRotateFile(o, "metrics-hb.")
+
 	go r.run()
 }
 
