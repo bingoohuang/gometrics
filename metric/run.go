@@ -138,13 +138,13 @@ func (r *Runner) logMetrics() {
 	for k, pv := range r.cache {
 		v := *pv
 
-		if v.V1 == 0 && v.V2 == 0 {
-			continue
-		}
-
 		// 处理瞬间current > total的情况.
 		if v.LogType.isPercent() && v.V1 > v.V2 {
 			v.V1 = v.V2
+		}
+
+		if v.V1 == 0 && v.V2 == 0 {
+			continue
 		}
 
 		r.writeLog(r.MetricsLogfile, v)

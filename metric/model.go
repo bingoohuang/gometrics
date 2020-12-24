@@ -48,9 +48,9 @@ type Line struct {
 	Hostname string  `json:"hostname"`
 	LogType  LogType `json:"logtype"`
 	V1       int64   `json:"v1"`
-	V2       int64   `json:"v2"`
-	Min      int64   `json:"min"`
-	Max      int64   `json:"max"`
+	V2       int64   `json:"v2"`  // 只有比率类型的时候，才用到v2
+	Min      int64   `json:"min"` // 累计最小值
+	Max      int64   `json:"max"` // 累计最大值
 }
 
 // AsyncPut new a metric line.
