@@ -1,6 +1,7 @@
 package metric_test
 
 import (
+	"fmt"
 	"math/rand"
 	"testing"
 	"time"
@@ -135,6 +136,20 @@ func BenchmarkCur(b *testing.B) {
 	c := metric.Cur("key1", "key2", "key3")
 
 	for i := 0; i < b.N; i++ {
-		c.Record(rand.Int63n(10))
+		c.Record(float64(rand.Int63n(10)))
 	}
+}
+
+func TestFloat64(t *testing.T) {
+	a := float64(0.15) + float64(0.15)
+	b := float64(0.1) + float64(0.2)
+	fmt.Println(a == b)
+	fmt.Println(metric.FloatEquals(a, b))
+
+	a = float64(0.15) - float64(0.15)
+	b = float64(0.1) - float64(0.1)
+	fmt.Println(a == b)
+	fmt.Println(a == float64(0.))
+
+	fmt.Println(metric.FloatEquals(a, b))
 }

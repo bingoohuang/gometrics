@@ -47,14 +47,14 @@ type Line struct {
 	Key      string  `json:"key"`  // {{k1}}#{{k2}}#{{k3}}
 	Hostname string  `json:"hostname"`
 	LogType  LogType `json:"logtype"`
-	V1       int64   `json:"v1"`
-	V2       int64   `json:"v2"`  // 只有比率类型的时候，才用到v2
-	Min      int64   `json:"min"` // 累计最小值
-	Max      int64   `json:"max"` // 累计最大值
+	V1       float64 `json:"v1"`  // 小数
+	V2       float64 `json:"v2"`  // 只有比率类型的时候，才用到v2
+	Min      float64 `json:"min"` // 累计最小值
+	Max      float64 `json:"max"` // 累计最大值
 }
 
 // AsyncPut new a metric line.
-func (r *Runner) AsyncPut(keys []string, logType LogType, v1, v2 int64) {
+func (r *Runner) AsyncPut(keys []string, logType LogType, v1, v2 float64) {
 	select {
 	case r.C <- Line{
 		Key:     strings.Join(keys, "#"),

@@ -2,6 +2,7 @@ package metric
 
 import (
 	"io"
+	"math"
 	"path/filepath"
 	"runtime"
 	"time"
@@ -143,7 +144,7 @@ func (r *Runner) logMetrics() {
 			v.V1 = v.V2
 		}
 
-		if v.V1 == 0 && v.V2 == 0 {
+		if FloatEquals(v.V1, 0) && FloatEquals(v.V2, 0) {
 			continue
 		}
 
@@ -198,13 +199,13 @@ func (l *Line) updateMinMax(n Line) {
 	uv1, uv2, curMin, curMax := l.V1+n.V1, l.V2+n.V2, l.Min, l.Max
 
 	// 百分比类型时，uv1 > uv2没意义（可能是分子还没更新，分母累积提前到达）
-	if n.V2 <= 0 || n.LogType.isPercent() && uv1 > uv2 {
+	if n.V2 <= EPSILON || n.LogType.isPercent() && uv1 > uv2 {
 		l.update(uv1, uv2, curMin, curMax)
 
 		return
 	}
 
-	var ratio int64 = 1
+	var ratio float64 = 1
 	if n.LogType.isPercent() {
 		ratio = 100
 	}
@@ -218,7 +219,7 @@ func (l *Line) updateMinMax(n Line) {
 	l.update(uv1, uv2, Min(curMin, ratio), Max(curMax, ratio))
 }
 
-func (l *Line) update(v1, v2, min, max int64) {
+func (l *Line) update(v1, v2, min, max float64) {
 	l.V1 = v1
 	l.V2 = v2
 	l.Min = min
@@ -226,8 +227,8 @@ func (l *Line) update(v1, v2, min, max int64) {
 }
 
 // Max returns the max of two number.
-func Max(max, v int64) int64 {
-	if max < 0 || v > max {
+func Max(max, v float64) float64 {
+	if max < EPSILON || v > max {
 		return v
 	}
 
@@ -235,10 +236,16 @@ func Max(max, v int64) int64 {
 }
 
 // Min returns the min of two number.
-func Min(min, v int64) int64 {
-	if min < 0 || v < min {
+func Min(min, v float64) float64 {
+	if min < EPSILON || v < min {
 		return v
 	}
 
 	return min
+}
+
+var EPSILON = math.Nextafter(1, 2) - 1
+
+func FloatEquals(a, b float64) bool {
+	return a-b < EPSILON && b-a < EPSILON
 }
