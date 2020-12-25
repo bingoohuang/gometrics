@@ -1,7 +1,7 @@
 package metric
 
 import (
-	"github.com/bingoohuang/gometrics/util"
+	"github.com/bingoohuang/gometrics/pkg/util"
 	"github.com/sirupsen/logrus"
 )
 

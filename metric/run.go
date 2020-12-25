@@ -7,8 +7,8 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/bingoohuang/gometrics/rotate"
-	"github.com/bingoohuang/gometrics/util"
+	"github.com/bingoohuang/gometrics/pkg/rotate"
+	"github.com/bingoohuang/gometrics/pkg/util"
 	"github.com/sirupsen/logrus"
 )
 
