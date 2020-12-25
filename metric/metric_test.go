@@ -140,6 +140,7 @@ func BenchmarkCur(b *testing.B) {
 	}
 }
 
+// nolint:staticcheck
 func TestFloat64(t *testing.T) {
 	a := float64(0.15) + float64(0.15)
 	b := float64(0.1) + float64(0.2)

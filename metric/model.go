@@ -2,6 +2,9 @@ package metric
 
 import (
 	"strings"
+	"time"
+
+	"github.com/bingoohuang/gometrics/pkg/lineprotocol"
 )
 
 // LogType means the logMetrics type.
@@ -41,6 +44,8 @@ func (lt LogType) isPercent() bool {
 	}
 }
 
+const TimeLayout = "20060102150405000"
+
 // Line represents a metric rotate line structure in rotate file.
 type Line struct {
 	Time     string  `json:"time"` // yyyyMMddHHmmssSSS
@@ -51,6 +56,19 @@ type Line struct {
 	V2       float64 `json:"v2"`  // 只有比率类型的时候，才用到v2
 	Min      float64 `json:"min"` // 累计最小值
 	Max      float64 `json:"max"` // 累计最大值
+}
+
+// ToLineProtocol
+func (l Line) ToLineProtocol() (string, error) {
+	t, err := time.Parse(TimeLayout, l.Time)
+	if err != nil {
+		return "", err
+	}
+
+	return lineprotocol.Build(string(l.LogType),
+		map[string]string{"key": l.Key, "hostname": l.Hostname},
+		map[string]interface{}{"v1": l.V1, "v2": l.V2, "min": l.Min, "max": l.Max},
+		t)
 }
 
 // AsyncPut new a metric line.

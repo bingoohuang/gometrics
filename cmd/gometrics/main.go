@@ -4,8 +4,17 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/bingoohuang/golog"
+
 	"github.com/bingoohuang/gometrics/metric"
 )
+
+func init() {
+	_, _ = golog.SetupLogrus(nil, "", "")
+	// os.Setenv("DEBUG", "true")
+	metric.DefaultRunner.Stop()
+	metric.DefaultRunner = metric.NewRunner(metric.EnvOption())
+}
 
 func main() {
 	f := func() {

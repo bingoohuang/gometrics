@@ -65,8 +65,9 @@ func NewRunner(ofs ...OptionFn) *Runner {
 		stop:            make(chan bool, 1),
 		cache:           make(map[cacheKey]*Line),
 	}
-
-	r.Start()
+	if o.AutoStart {
+		r.Start()
+	}
 
 	runtime.SetFinalizer(r, func(r *Runner) { r.Stop() })
 
@@ -90,6 +91,8 @@ func (r *Runner) Start() {
 	r.HBLogfile = createRotateFile(o, "metrics-hb.")
 
 	go r.run()
+
+	logrus.Info("runner started")
 }
 
 // Stop stops the runner.
@@ -160,12 +163,17 @@ func (r *Runner) logMetrics() {
 }
 
 func (r *Runner) writeLog(file io.Writer, v Line) {
+	v.Time = time.Now().Format(TimeLayout)
+	v.Hostname = util.Hostname
+
+	if r.option.Debug {
+		s, _ := v.ToLineProtocol()
+		logrus.Infof("LineProtocol:%s", s)
+	}
 	if file == nil {
 		return
 	}
 
-	v.Time = time.Now().Format("20060102150405000") // yyyyMMddHHmmssSSS
-	v.Hostname = util.Hostname
 	content := util.JSONCompact(v)
 
 	if _, err := file.Write([]byte(content + "\n")); err != nil {
