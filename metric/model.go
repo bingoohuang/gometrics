@@ -73,6 +73,8 @@ func (l Line) ToLineProtocol() (string, error) {
 
 // AsyncPut new a metric line.
 func (r *Runner) AsyncPut(keys []string, logType LogType, v1, v2 float64) {
+	r.startOnce.Do(r.start)
+
 	select {
 	case r.C <- Line{
 		Key:     strings.Join(keys, "#"),

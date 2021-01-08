@@ -1,6 +1,7 @@
 github.com/bingoohuang/ginx v0.0.0-20200729033750-047869f5e81c/go.mod h1:fv5fKhsGUfPInVsslF5FJv2oNlZn153C5OogaaUFvFc=
-github.com/bingoohuang/golog v0.0.0-20201222021702-eb404d876719 h1:Z4f8poJjZYYr9Iz1wXf1YI/yrHOCN9Mbj7kLlMApa2c=
-github.com/bingoohuang/golog v0.0.0-20201222021702-eb404d876719/go.mod h1:Tsdi7oK8Bm5pHa9V5muMMf9NFdlmWGy2jTiwfIp3G9U=
+github.com/bingoohuang/golog v0.0.0-20210108044104-f2ce059bbd2e h1:zviDMHBM+01lPQYbOV3h9jhqXMnqH5x9Muww477ySMs=
+github.com/bingoohuang/golog v0.0.0-20210108044104-f2ce059bbd2e/go.mod h1:Spoz6xZ5os4HNHOor3Dah72S8FQZilB/A54vezzbF4I=
+github.com/bingoohuang/sariaf v0.0.0-20201222043148-21fd9703b115/go.mod h1:DSi1LVR76Ap189KzzA40C8pFSpRZHsy/n+kgK8ihfhs=
 github.com/caarlos0/env/v6 v6.1.0 h1:4FbM+HmZA/Q5wdSrH2kj0KQXm7xnhuO8y3TuOTnOvqc=
 github.com/caarlos0/env/v6 v6.1.0/go.mod h1:iUA6X3VCAOwDhoqvgKlTGjjwJzQseIJaFYApUqQkt+8=
 github.com/creasty/defaults v1.3.0 h1:uG+RAxYbJgOPCOdKEcec9ZJXeva7Y6mj/8egdzwmLtw=

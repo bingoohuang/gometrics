@@ -20,7 +20,6 @@ type Option struct {
 	LogPath         string        `default:"/tmp/log/metrics" env:"LOG_PATH"` // 日志路径
 	MaxBackups      int           `default:"7" env:"MAX_BACKUPS"`             // 最大保留天数
 	Debug           bool          `env:"DEBUG"`                               // 开启测试模式
-	AutoStart       bool          `default:"true" env:"AUTO_START"`           // 自动启动
 }
 
 // OptionFn defines the function for options setting.

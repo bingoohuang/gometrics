@@ -5,6 +5,7 @@ import (
 	"math"
 	"path/filepath"
 	"runtime"
+	"sync"
 	"time"
 
 	"github.com/bingoohuang/gometrics/pkg/rotate"
@@ -14,11 +15,6 @@ import (
 
 // DefaultRunner is the default runner for metric recording.
 var DefaultRunner = NewRunner(EnvOption())
-
-// Start starts the default runner.
-func Start() {
-	DefaultRunner.Start()
-}
 
 // Stop stops the default runner.
 func Stop() {
@@ -39,8 +35,9 @@ type Runner struct {
 	MetricsLogfile io.Writer
 	HBLogfile      io.Writer
 
-	cache  map[cacheKey]*Line
-	option *Option
+	cache     map[cacheKey]*Line
+	option    *Option
+	startOnce sync.Once
 }
 
 type cacheKey struct {
@@ -65,9 +62,6 @@ func NewRunner(ofs ...OptionFn) *Runner {
 		stop:            make(chan bool, 1),
 		cache:           make(map[cacheKey]*Line),
 	}
-	if o.AutoStart {
-		r.Start()
-	}
 
 	runtime.SetFinalizer(r, func(r *Runner) { r.Stop() })
 
@@ -85,7 +79,7 @@ func createRotateFile(o *Option, prefix string) *rotate.File {
 }
 
 // Start starts the runner.
-func (r *Runner) Start() {
+func (r *Runner) start() {
 	o := r.option
 	r.MetricsLogfile = createRotateFile(o, "metrics-key.")
 	r.HBLogfile = createRotateFile(o, "metrics-hb.")
