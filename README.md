@@ -6,7 +6,7 @@ metrics golang client library.
 
 \# | TYPE         | Meaning
 ---|--------------|--------
-1  | RT           | 平均响应时间
+1  | RT           | 平均响应时间，单位毫秒Millisecond,ms
 2  | QPS          | 业务量(次数)
 3  | SUCCESS_RATE | 成功率
 4  | FAIL_RATE    | 失败率
