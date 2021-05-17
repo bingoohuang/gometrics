@@ -33,10 +33,7 @@ func EnvOption(filenames ...string) OptionFn {
 			filenames = []string{envFile}
 		}
 
-		if err := godotenv.Load(filenames...); err != nil {
-			logrus.Warnf("loading env file error %+v", err)
-		}
-
+		_ = godotenv.Load(filenames...)
 		if err := env.Parse(o); err != nil {
 			logrus.Warnf("parse env to option error %+v", err)
 		}
