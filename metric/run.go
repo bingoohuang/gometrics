@@ -131,6 +131,10 @@ func (r *Runner) run() {
 func (r *Runner) afterMetricsInterval() bool { return time.Since(r.startTime) > r.MetricsInterval }
 
 func (r *Runner) logMetrics() {
+	if r.MetricsLogfile == nil {
+		return
+	}
+
 	r.startTime = time.Now()
 
 	for k, pv := range r.cache {
@@ -190,6 +194,10 @@ func (r *Runner) mergeLog(l Line) {
 }
 
 func (r *Runner) logHB() {
+	if r.HBLogfile == nil {
+		return
+	}
+
 	r.writeLog(r.HBLogfile, Line{
 		Key:     r.AppName + ".hb",
 		LogType: HB,
