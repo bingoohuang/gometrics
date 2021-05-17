@@ -68,11 +68,12 @@ func NewRunner(ofs ...OptionFn) *Runner {
 	return r
 }
 
-func createRotateFile(o *Option, prefix string) *rotate.File {
+func createRotateFile(o *Option, prefix string) io.Writer {
 	f := filepath.Join(o.LogPath, prefix+o.AppName+".log")
 	lf, err := rotate.NewFile(f, o.MaxBackups)
 	if err != nil {
 		logrus.Warnf("fail to new logMetrics file %s, error %v", f, err)
+		return nil
 	}
 
 	return lf
