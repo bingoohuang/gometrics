@@ -13,18 +13,14 @@ sec:
 init:
 	export GOPROXY=https://goproxy.cn
 
-lint:
-	#golangci-lint run --enable-all
-	golangci-lint run ./...
-
 fmt:
-	gofumports -w .
 	gofumpt -w .
 	gofmt -s -w .
 	go mod tidy
 	go fmt ./...
 	revive .
 	goimports -w .
+	golangci-lint run
 
 install: init
 	go install -ldflags="-s -w" ./...

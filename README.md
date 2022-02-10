@@ -4,22 +4,22 @@ metrics golang client library.
 
 ## metrics
 
-\# | TYPE         | Meaning
----|--------------|--------
-1  | RT           | 平均响应时间，单位毫秒Millisecond,ms
-2  | QPS          | 业务量(次数)
-3  | SUCCESS_RATE | 成功率
-4  | FAIL_RATE    | 失败率
-5  | HIT_RATE     | 命中率
-6  | CUR          | 瞬时值
+| \#  | TYPE         | Meaning|
+|-----|--------------|--------|
+| 1   | RT           | 平均响应时间，单位毫秒Millisecond,ms|
+| 2   | QPS          | 业务量(次数)|
+| 3   | SUCCESS_RATE | 成功率|
+| 4   | FAIL_RATE    | 失败率|
+| 5   | HIT_RATE     | 命中率|
+| 6   | CUR          | 瞬时值|
 
 ## HB
 
 心跳
 
-\# | TYPE | Meaning
----|------|--------
-1  | HB   | 一次心跳
+| \#  | TYPE | Meaning|
+|-----|------|--------|
+| 1   | HB   | 一次心跳|
 
 ## Client Usage
 
@@ -44,41 +44,45 @@ metrics golang client library.
 
 1. 通过命令行环境变量设置
 
-    eg. `APP_NAME=demo demoproc`
+   eg. `APP_NAME=demo demoproc`
 
 1. 通过命令行指定环境文件名
 
-    eg. `ENV_FILE=testdata/golden.env demoproc`
+   eg. `ENV_FILE=testdata/golden.env demoproc`
 
 ### RT 平均响应时间
 
 ```go
+package main
+
 import (
 	"github.com/bingoohuang/gometrics/metric"
 )
 
 func YourBusinessDemo1() {
 	// 这里使用defer是为了在函数结束时，计算耗时
-    defer metric.RT("key1", "key2", "key3").Record()
+	defer metric.RT("key1", "key2", "key3").Record()
 
-    // business logic
+	// business logic
 }
 
 func YourBusinessDemo2() {
-    rt := metric.RT("key1", "key2", "key3")
+	rt := metric.RT("key1", "key2", "key3")
 
-    // business logic
-    start := time.Now()
-    // ...
-    rt.RecordSince(start)
+	// business logic
+	start := time.Now()
+	// ...
+	rt.RecordSince(start)
 }
 ```
 
 ### QPS 业务量(次数)
 
 ```go
+package main
+
 func YourBusinessDemoQPS() {
-    metric.QPS("key1", "key2", "key3").Record(1 /* 业务量 */ )
+	metric.QPS("key1", "key2", "key3").Record(1 /* 业务量 */)
 }
 ```
 
@@ -86,53 +90,61 @@ or in simplified way:
 
 ```go
 func YourBusinessDemoQPS() {
-    metric.QPS1("key1", "key2", "key3")
+metric.QPS1("key1", "key2", "key3")
 }
 ```
 
 ### SUCCESS_RATE 成功率
 
 ```go
-func YourBusinessDemoSuccessRate() {
-    sr := metric.SuccessRate("key1", "key2", "key3")
-    defer sr.IncrTotal()
+package main
 
-    // business logic
-    sr.IncrSuccess()
+func YourBusinessDemoSuccessRate() {
+	sr := metric.SuccessRate("key1", "key2", "key3")
+	defer sr.IncrTotal()
+
+	// business logic
+	sr.IncrSuccess()
 }
 ```
 
 ### FAIL_RATE 失败率
 
 ```go
-func YourBusinessDemoFailRate() {
-    fr := metric.FailRate("key1", "key2", "key3")
-    defer fr.IncrTotal()
+package main
 
-    // business logic
-    fr.IncrFail()
+func YourBusinessDemoFailRate() {
+	fr := metric.FailRate("key1", "key2", "key3")
+	defer fr.IncrTotal()
+
+	// business logic
+	fr.IncrFail()
 }
 ```
 
 ### HIT_RATE 命中率
 
 ```go
-func YourBusinessDemoHitRate() {
-    fr := metric.HitRate("key1", "key2", "key3")
-    defer fr.IncrTotal()
+package main
 
-    // business logic
-    fr.IncrHit()
+func YourBusinessDemoHitRate() {
+	fr := metric.HitRate("key1", "key2", "key3")
+	defer fr.IncrTotal()
+
+	// business logic
+	fr.IncrHit()
 }
 ```
 
 ### CUR 瞬时值
 
 ```go
+package main
+
 func YourBusinessDemoCur() {
-    // business logic
-    metric.Cur("key1", "key2", "key3").Record(100)
-    // business logic
+	// business logic
+	metric.Cur("key1", "key2", "key3").Record(100)
+	// business logic
 }
 ```
 
