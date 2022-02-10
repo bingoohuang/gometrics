@@ -5,7 +5,6 @@ import (
 	"math"
 	"path/filepath"
 	"runtime"
-	"sync"
 	"time"
 
 	"github.com/bingoohuang/gometrics/pkg/rotate"
@@ -15,6 +14,13 @@ import (
 
 // DefaultRunner is the default runner for metric recording.
 var DefaultRunner = NewRunner(EnvOption())
+
+func init() {
+	// start the default runner at init.
+	// so the application can have at least heartbeat metrics even if there is no explicit metrics api call.
+	// according to lvyong's words.
+	DefaultRunner.Start()
+}
 
 // Stop stops the default runner.
 func Stop() {
@@ -35,9 +41,8 @@ type Runner struct {
 	MetricsLogfile io.Writer
 	HBLogfile      io.Writer
 
-	cache     map[cacheKey]*Line
-	option    *Option
-	startOnce sync.Once
+	cache  map[cacheKey]*Line
+	option *Option
 }
 
 type cacheKey struct {
@@ -80,7 +85,7 @@ func createRotateFile(o *Option, prefix string) io.Writer {
 }
 
 // Start starts the runner.
-func (r *Runner) start() {
+func (r *Runner) Start() {
 	o := r.option
 	r.MetricsLogfile = createRotateFile(o, "metrics-key.")
 	r.HBLogfile = createRotateFile(o, "metrics-hb.")
