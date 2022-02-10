@@ -4,22 +4,22 @@ metrics golang client library.
 
 ## metrics
 
-| \#  | TYPE         | Meaning|
-|-----|--------------|--------|
-| 1   | RT           | 平均响应时间，单位毫秒Millisecond,ms|
-| 2   | QPS          | 业务量(次数)|
-| 3   | SUCCESS_RATE | 成功率|
-| 4   | FAIL_RATE    | 失败率|
-| 5   | HIT_RATE     | 命中率|
-| 6   | CUR          | 瞬时值|
+| \#  | TYPE         | Meaning        | v1         | v2    | v3-v9                                   |
+|-----|--------------|----------------|------------|-------|-----------------------------------------|
+| 1   | RT           | 平均响应时间，单位毫秒 ms | 累计响应时间(ms） | 累计次数  | v3: 300-400ms 总次数, ..., v9: >=900ms 总次数 |
+| 2   | QPS          | 业务量(次数)        | 次数         | 0     | 0                                       |
+| 3   | SUCCESS_RATE | 成功率            | 累计成功数      | 累计调用数 | 0                                       |
+| 4   | FAIL_RATE    | 失败率            | 累计失败数      | 累计调用数 | 0                                       |
+| 5   | HIT_RATE     | 命中率            | 累计命中数      | 累计调用数 | 0                                       |
+| 6   | CUR          | 瞬时值            | 累计瞬时值      | 0     | 0                                       |
 
 ## HB
 
 心跳
 
-| \#  | TYPE | Meaning|
-|-----|------|--------|
-| 1   | HB   | 一次心跳|
+| \#  | TYPE | Meaning | v1  | v2-v9 |
+|-----|------|---------|-----|-------|
+| 1   | HB   | 一次心跳    | 1   | 0     |
 
 ## Client Usage
 
@@ -150,28 +150,46 @@ func YourBusinessDemoCur() {
 
 ### Demo
 
-1. build `go install -ldflags="-s -w" ./...`
-1. or build for linux
+1. build `make`
+1. build for linux
 
-    - `CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go install -ldflags="-s -w" ./...`
-    - `upx ~/go/bin/linux_amd64/gometricsdemo`
-    - `bssh scp -H A-gw-test2 ~/go/bin/linux_amd64/gometricsdemo r:./bingoohuang/gometrics`
+    - `make linux`
+    - `bssh scp -H A-gw-test2 ~/go/bin/linux_amd64/gometrics r:./bingoohuang/gometrics`
 
-1. run `ENV_FILE=testdata/golden.env gometricsdemo`
+1. run `GOLOG_STDOUT=true ENV_FILE=testdata/golden.env gometrics`
 
 ```bash
 $ tail -f /tmp/metricslog/metrics-hb.bingoohuangapp.log
-{"time":"20200205162411000","key":"bingoohuangapp.hb","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
-{"time":"20200205162431000","key":"bingoohuangapp.hb","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
-{"time":"20200205162451000","key":"bingoohuangapp.hb","hostname":"192.168.10.101","logtype":"HB","v1":1,"v2":0,"min":0,"max":0}
+{"time":"20220210151532000","key":"bingoohuangapp.hb","hostname":"bogon","logtype":"HB","v1":1,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":0}
+{"time":"20220210151850000","key":"bingoohuangapp.hb","hostname":"bogon","logtype":"HB","v1":1,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":0}
+{"time":"20220210151918000","key":"bingoohuangapp.hb","hostname":"bogon","logtype":"HB","v1":1,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":0}
+{"time":"20220210151918000","key":"bingoohuangapp.hb","hostname":"bogon","logtype":"HB","v1":1,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":0}
+{"time":"20220210151938000","key":"bingoohuangapp.hb","hostname":"bogon","logtype":"HB","v1":1,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":0}
+{"time":"20220210151958000","key":"bingoohuangapp.hb","hostname":"bogon","logtype":"HB","v1":1,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":0}
+{"time":"20220210152018000","key":"bingoohuangapp.hb","hostname":"bogon","logtype":"HB","v1":1,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":0}
+{"time":"20220210152038000","key":"bingoohuangapp.hb","hostname":"bogon","logtype":"HB","v1":1,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":0}
 ```
 
 ```bash
 $ tail -f /tmp/metricslog/metrics-key.bingoohuangapp.log
-{"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"FAIL_RATE","v1":0,"v2":2,"min":0,"max":100}
-{"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"HIT_RATE","v1":1,"v2":2,"min":0,"max":100}
-{"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"CUR","v1":100,"v2":0,"min":0,"max":0}
-{"time":"20200205162628000","key":"key1#key2#key3","hostname":"192.168.10.101","logtype":"RT","v1":193,"v2":1,"min":0,"max":811}
+{"time":"20220210153842000","key":"key1#key2#key3","hostname":"bogon","logtype":"RT","v1":493.182544,"v2":1,"v3":0,"v4":1,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0.002651,"max":895.039581}
+{"time":"20220210153842000","key":"key1#key2#key3","hostname":"bogon","logtype":"QPS","v1":1,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":-1,"max":-1}
+{"time":"20220210153845000","key":"key1#key2#key3","hostname":"bogon","logtype":"RT","v1":406.150128,"v2":1,"v3":0,"v4":1,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0.002651,"max":895.039581}
+{"time":"20220210153845000","key":"key1#key2#key3","hostname":"bogon","logtype":"QPS","v1":1,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":-1,"max":-1}
+{"time":"20220210153845000","key":"key1#key2#key3","hostname":"bogon","logtype":"SUCCESS_RATE","v1":0,"v2":1,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":100}
+{"time":"20220210153845000","key":"key1#key2#key3","hostname":"bogon","logtype":"FAIL_RATE","v1":0,"v2":1,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":100}
+{"time":"20220210153845000","key":"key1#key2#key3","hostname":"bogon","logtype":"HIT_RATE","v1":1,"v2":1,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":100,"max":100}
+{"time":"20220210153845000","key":"key1#key2#key3","hostname":"bogon","logtype":"CUR","v1":100,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":-1,"max":-1}
+{"time":"20220210153848000","key":"key1#key2#key3","hostname":"bogon","logtype":"FAIL_RATE","v1":0,"v2":1,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":100}
+{"time":"20220210153848000","key":"key1#key2#key3","hostname":"bogon","logtype":"HIT_RATE","v1":0,"v2":1,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":100}
+{"time":"20220210153848000","key":"key1#key2#key3","hostname":"bogon","logtype":"CUR","v1":200,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":-1,"max":-1}
+{"time":"20220210153848000","key":"key1#key2#key3","hostname":"bogon","logtype":"RT","v1":174.261568,"v2":1,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0.002651,"max":895.039581}
+{"time":"20220210153848000","key":"key1#key2#key3","hostname":"bogon","logtype":"QPS","v1":1,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":-1,"max":-1}
+{"time":"20220210153848000","key":"key1#key2#key3","hostname":"bogon","logtype":"SUCCESS_RATE","v1":0,"v2":1,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":100}
+{"time":"20220210153851000","key":"key1#key2#key3","hostname":"bogon","logtype":"RT","v1":425.397096,"v2":1,"v3":0,"v4":1,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0.002651,"max":895.039581}
+{"time":"20220210153851000","key":"key1#key2#key3","hostname":"bogon","logtype":"QPS","v1":1,"v2":0,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":-1,"max":-1}
+{"time":"20220210153851000","key":"key1#key2#key3","hostname":"bogon","logtype":"SUCCESS_RATE","v1":0,"v2":1,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":100}
+{"time":"20220210153851000","key":"key1#key2#key3","hostname":"bogon","logtype":"FAIL_RATE","v1":0,"v2":1,"v3":0,"v4":0,"v5":0,"v6":0,"v7":0,"v8":0,"v9":0,"min":0,"max":100}
 ```
 
 ## benchmark
@@ -198,22 +216,18 @@ ok      github.com/bingoohuang/gometrics/metric 11.385s
 ## cloc
 
 ```bash
-# bingoo @ 192 in ~/GitHub/gometrics on git:master o [16:54:30]
 $ go get -u github.com/hhatto/gocloc/cmd/gocloc
-
-# bingoo @ 192 in ~/GitHub/gometrics on git:master x [16:54:49]
 $ gocloc .
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              12            230             82            788
-XML                              4              0              0            289
-Markdown                         3             46              0            134
+Go                              13            279             94           1033
+XML                              5              0              0            225
+Markdown                         3             62              0            210
+Makefile                         1             15              7             46
 -------------------------------------------------------------------------------
-TOTAL                           19            276             82           1211
+TOTAL                           22            356            101           1514
 -------------------------------------------------------------------------------
-
-# bingoo @ 192 in ~/GitHub/gometrics on git:master o [16:55:03]
 $ date
-2020年 2月 5日 星期三 16时56分33秒 CST
+Thu Feb 10 15:41:15 CST 2022
 ```

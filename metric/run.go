@@ -128,7 +128,6 @@ func (r *Runner) run() {
 			r.logHB()
 		case <-r.stop:
 			logrus.Info("runner stopped")
-
 			return
 		}
 	}
@@ -162,6 +161,13 @@ func (r *Runner) logMetrics() {
 		} else {
 			pv.V1 -= v.V1
 			pv.V2 -= v.V2
+			pv.V3 -= v.V3
+			pv.V4 -= v.V4
+			pv.V5 -= v.V5
+			pv.V6 -= v.V6
+			pv.V7 -= v.V7
+			pv.V8 -= v.V8
+			pv.V9 -= v.V9
 		}
 	}
 }
@@ -191,6 +197,13 @@ func (r *Runner) mergeLog(l Line) {
 		if l.LogType.isSimple() { // 瞬值，直接更新日志
 			c.V1 = l.V1
 			c.V2 = l.V2
+			c.V3 = l.V3
+			c.V4 = l.V4
+			c.V5 = l.V5
+			c.V6 = l.V6
+			c.V7 = l.V7
+			c.V8 = l.V8
+			c.V9 = l.V9
 		}
 
 		c.updateMinMax(l)
@@ -213,10 +226,17 @@ func (r *Runner) logHB() {
 
 func (l *Line) updateMinMax(n Line) {
 	uv1, uv2, curMin, curMax := l.V1+n.V1, l.V2+n.V2, l.Min, l.Max
+	uv3 := l.V3 + n.V3
+	uv4 := l.V4 + n.V4
+	uv5 := l.V5 + n.V5
+	uv6 := l.V6 + n.V6
+	uv7 := l.V7 + n.V7
+	uv8 := l.V8 + n.V8
+	uv9 := l.V9 + n.V9
 
 	// 百分比类型时，uv1 > uv2没意义（可能是分子还没更新，分母累积提前到达）
 	if n.V2 <= EPSILON || n.LogType.isPercent() && uv1 > uv2 {
-		l.update(uv1, uv2, curMin, curMax)
+		l.update(uv1, uv2, uv3, uv4, uv5, uv6, uv7, uv8, uv9, curMin, curMax)
 
 		return
 	}
@@ -232,12 +252,19 @@ func (l *Line) updateMinMax(n Line) {
 		ratio *= uv1 / uv2
 	}
 
-	l.update(uv1, uv2, Min(curMin, ratio), Max(curMax, ratio))
+	l.update(uv1, uv2, uv3, uv4, uv5, uv6, uv7, uv8, uv9, Min(curMin, ratio), Max(curMax, ratio))
 }
 
-func (l *Line) update(v1, v2, min, max float64) {
+func (l *Line) update(v1, v2, v3, v4, v5, v6, v7, v8, v9, min, max float64) {
 	l.V1 = v1
 	l.V2 = v2
+	l.V3 = v3
+	l.V4 = v4
+	l.V5 = v5
+	l.V6 = v6
+	l.V7 = v7
+	l.V8 = v8
+	l.V9 = v9
 	l.Min = min
 	l.Max = max
 }

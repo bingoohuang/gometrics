@@ -20,9 +20,9 @@ func (r *Runner) MakeRecorder(logType LogType, keys []string) Recorder {
 }
 
 // PutRecord put a metric record to channel.
-func (c Recorder) PutRecord(v1, v2 float64) {
+func (c Recorder) PutRecord(v1, v2 float64, vx ...float64) {
 	if c.Checked {
-		c.Runner.AsyncPut(c.Key.Keys, c.LogType, v1, v2)
+		c.Runner.AsyncPut(c.Key.Keys, c.LogType, v1, v2, vx...)
 	}
 }
 
@@ -44,7 +44,27 @@ func (r *Runner) RT(keys ...string) RTRecorder {
 func (r RTRecorder) Record() { r.RecordSince(r.Start) }
 
 // RecordSince records a round-time since start.
-func (r RTRecorder) RecordSince(start time.Time) { r.PutRecord(float64(time.Since(start))/1e6, 1) }
+func (r RTRecorder) RecordSince(start time.Time) {
+	v1 := float64(time.Since(start)) / 1e6
+	vx := make([]float64, 9-2)
+	switch {
+	case v1 >= 900:
+		vx[9-3] = 1
+	case v1 >= 800:
+		vx[8-3] = 1
+	case v1 >= 700:
+		vx[7-3] = 1
+	case v1 >= 600:
+		vx[6-3] = 1
+	case v1 >= 500:
+		vx[5-3] = 1
+	case v1 >= 400:
+		vx[4-3] = 1
+	case v1 >= 300:
+		vx[3-3] = 1
+	}
+	r.PutRecord(v1, 1, vx...)
+}
 
 // QPSRecorder is a QPS recorder.
 type QPSRecorder struct{ Recorder }

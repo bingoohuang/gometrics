@@ -1,5 +1,5 @@
 .PHONY: default test install
-all: default test install
+all: test install
 
 app=$(notdir $(shell pwd))
 

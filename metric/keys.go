@@ -25,9 +25,7 @@ func (k *Key) Check() {
 
 	if len(k.Keys) == 0 {
 		k.Checked = false
-
 		logrus.Warn("Keys required")
-
 		return
 	}
 
@@ -43,18 +41,15 @@ const strippedChars = `" .,|#\` + "\t\r\n"
 func (k *Key) validateKey(i int, key string) bool {
 	if key == "" {
 		logrus.Warn("Key can not be empty")
-
 		return false
 	}
 
 	key = util.StripAny(key, strippedChars)
 	if key == "" {
 		logrus.Warnf("invalid Key %s", key)
-
 		return false
 	}
 
 	k.Keys[i] = util.Abbr(key, 100, "...")
-
 	return true
 }

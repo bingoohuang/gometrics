@@ -10,10 +10,10 @@ import (
 )
 
 func init() {
-	_ = golog.SetupLogrus()
-	// os.Setenv("DEBUG", "true")
+	_ = golog.Setup()
 	metric.DefaultRunner.Stop()
 	metric.DefaultRunner = metric.NewRunner(metric.EnvOption())
+	metric.DefaultRunner.Start()
 }
 
 func main() {
