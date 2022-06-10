@@ -1,6 +1,7 @@
 package metric
 
 import (
+	"github.com/bingoohuang/gometrics/pkg/ks"
 	"github.com/bingoohuang/gometrics/pkg/util"
 	"github.com/sirupsen/logrus"
 )
@@ -9,14 +10,19 @@ import (
 type Key struct {
 	Keys    []string
 	Checked bool
+
+	ks *ks.Ks
 }
 
 // NewKey create Keys.
 func NewKey(keys []string) Key {
-	ks := Key{Keys: keys, Checked: false}
-	ks.Check()
+	if len(keys) == 0 || len(keys) > 3 {
+		panic("only at least 1 key or max 3 keys allowed")
+	}
+	k := Key{Keys: keys, Checked: false}
+	k.Check()
 
-	return ks
+	return k
 }
 
 // Check checks the validation of keys.

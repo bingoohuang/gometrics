@@ -4,6 +4,8 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/bingoohuang/gometrics/pkg/ks"
+
 	"github.com/bingoohuang/golog"
 
 	"github.com/bingoohuang/gometrics/metric"
@@ -28,7 +30,7 @@ func main() {
 		switch m {
 		case 0:
 			func() {
-				defer metric.RT("key1", "key2", "key3").Record()
+				defer metric.RT("key1", "key2", "key3").Ks(ks.K4("k4")).Record()
 				f()
 			}()
 		case 1:

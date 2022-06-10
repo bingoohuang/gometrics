@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bingoohuang/gometrics/pkg/ks"
+
 	"github.com/bingoohuang/gometrics/metric"
 )
 
@@ -43,14 +45,19 @@ func TestRT(t *testing.T) {
 	<-c
 }
 
+func TestRT2(t *testing.T) {
+	metric.RT("key1", "key2", "key3").Ks(ks.K4("a").K8("8")).Record()
+	select {}
+}
+
 func BenchmarkRT(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		metric.RT("key1", "key2", "key3").Record()
+		metric.RT("key1", "key2", "key3").Ks(ks.K4("a").K8("8")).Record()
 	}
 }
 
 func TestQPS(t *testing.T) {
-	metric.QPS("key1").Record(1)
+	metric.QPS("key1").Ks(ks.K4("a").K8("8")).Record(1)
 	metric.QPS("key1", "key2").Record(1)
 	metric.QPS("key1", "key2", "key3").Record(1)
 }
@@ -75,7 +82,7 @@ func BenchmarkQPS1(b *testing.B) {
 
 func TestSuccessRate(t *testing.T) {
 	sr := metric.SuccessRate("key1", "key2", "key3")
-	sr.IncrSuccess()
+	sr.Ks(ks.K4("a").K8("8")).IncrSuccess()
 	sr.IncrTotal()
 }
 
@@ -140,10 +147,9 @@ func BenchmarkCur(b *testing.B) {
 	}
 }
 
-// nolint:staticcheck
 func TestFloat64(t *testing.T) {
-	a := float64(0.15) + float64(0.15)
-	b := float64(0.1) + float64(0.2)
+	a := 0.15 + float64(0.15)
+	b := 0.1 + float64(0.2)
 	fmt.Println(a == b)
 	fmt.Println(metric.FloatEquals(a, b))
 

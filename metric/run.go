@@ -5,6 +5,7 @@ import (
 	"math"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/bingoohuang/gometrics/pkg/rotate"
@@ -50,8 +51,13 @@ type cacheKey struct {
 	LogType LogType
 }
 
-func makeCacheKey(key string, logType LogType) cacheKey {
-	return cacheKey{Key: key, LogType: logType}
+func (l *Line) makeCacheKey() cacheKey {
+	c := cacheKey{Key: l.Key, LogType: l.LogType}
+	if l.Ks != nil {
+		c.Key += "," + strings.Join(l.Ks.Keys[:], "#")
+	}
+
+	return c
 }
 
 // NewRunner creates a Runner.
@@ -151,6 +157,9 @@ func (r *Runner) logMetrics() {
 		}
 
 		if FloatEquals(v.V1, 0) && FloatEquals(v.V2, 0) {
+			if v.hasExtraKeys() {
+				delete(r.cache, k)
+			}
 			continue
 		}
 
@@ -175,6 +184,7 @@ func (r *Runner) logMetrics() {
 func (r *Runner) writeLog(file io.Writer, v Line) {
 	v.Time = time.Now().Format(TimeLayout)
 	v.Hostname = util.Hostname
+	v.fulfilKeys()
 
 	if r.option.Debug {
 		s, _ := v.ToLineProtocol()
@@ -192,7 +202,7 @@ func (r *Runner) writeLog(file io.Writer, v Line) {
 }
 
 func (r *Runner) mergeLog(l Line) {
-	k := makeCacheKey(l.Key, l.LogType)
+	k := l.makeCacheKey()
 	if c, ok := r.cache[k]; ok {
 		if l.LogType.isSimple() { // 瞬值，直接更新日志
 			c.V1 = l.V1

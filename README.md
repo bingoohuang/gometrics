@@ -57,11 +57,12 @@ package main
 
 import (
 	"github.com/bingoohuang/gometrics/metric"
+	"github.com/bingoohuang/gometrics/pkg/ks"
 )
 
 func YourBusinessDemo1() {
 	// 这里使用defer是为了在函数结束时，计算耗时
-	defer metric.RT("key1", "key2", "key3").Record()
+	defer metric.RT("key1", "key2", "key3").Ks(ks.K4("a").K8("8")).Record()
 
 	// business logic
 }
@@ -90,7 +91,7 @@ or in simplified way:
 
 ```go
 func YourBusinessDemoQPS() {
-metric.QPS1("key1", "key2", "key3")
+	metric.QPS1("key1", "key2", "key3")
 }
 ```
 

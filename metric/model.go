@@ -1,8 +1,12 @@
 package metric
 
 import (
+	"fmt"
+	"reflect"
 	"strings"
 	"time"
+
+	"github.com/bingoohuang/gometrics/pkg/ks"
 
 	"github.com/bingoohuang/gometrics/pkg/lineprotocol"
 )
@@ -64,6 +68,30 @@ type Line struct {
 
 	Min float64 `json:"min"` // 累计最小值
 	Max float64 `json:"max"` // 累计最大值
+
+	Keys []string `json:"-"`
+	Ks   *ks.Ks   `json:"-"`
+
+	K1  string `json:"k1,omitempty"`
+	K2  string `json:"k2,omitempty"`
+	K3  string `json:"k3,omitempty"`
+	K4  string `json:"k4,omitempty"`
+	K5  string `json:"k5,omitempty"`
+	K6  string `json:"k6,omitempty"`
+	K7  string `json:"k7,omitempty"`
+	K8  string `json:"k8,omitempty"`
+	K9  string `json:"k9,omitempty"`
+	K10 string `json:"k10,omitempty"`
+	K11 string `json:"k11,omitempty"`
+	K12 string `json:"k12,omitempty"`
+	K13 string `json:"k13,omitempty"`
+	K14 string `json:"k14,omitempty"`
+	K15 string `json:"k15,omitempty"`
+	K16 string `json:"k16,omitempty"`
+	K17 string `json:"k17,omitempty"`
+	K18 string `json:"k18,omitempty"`
+	K19 string `json:"k19,omitempty"`
+	K20 string `json:"k20,omitempty"`
 }
 
 // ToLineProtocol print l to a influxdb v1 line protocol format.
@@ -73,15 +101,61 @@ func (l Line) ToLineProtocol() (string, error) {
 		return "", err
 	}
 
+	fields := map[string]interface{}{
+		"v1": l.V1, "v2": l.V2, "min": l.Min, "max": l.Max,
+		"v3": l.V3, "v4": l.V4, "v5": l.V5, "v6": l.V6, "v7": l.V7, "v8": l.V8, "v9": l.V9,
+	}
+
+	if l.Ks != nil {
+		for i := 3; i <= len(l.Ks.Keys); i++ {
+			if l.Ks.Keys[i-1] != "" {
+				fields[fmt.Sprintf("k%d", i)] = l.Ks.Keys[i-1]
+			}
+		}
+	}
+
 	return lineprotocol.Build(string(l.LogType),
 		map[string]string{"key": l.Key, "hostname": l.Hostname},
-		map[string]interface{}{"v1": l.V1, "v2": l.V2, "min": l.Min, "max": l.Max,
-			"v3": l.V3, "v4": l.V4, "v5": l.V5, "v6": l.V6, "v7": l.V7, "v8": l.V8, "v9": l.V9},
+		fields,
 		t)
 }
 
+func (l Line) hasExtraKeys() bool {
+	if l.Ks != nil {
+		for i := 3; i <= len(l.Ks.Keys); i++ {
+			if l.Ks.Keys[i-1] != "" {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func (l *Line) fulfilKeys() {
+	if len(l.Keys) >= 3 {
+		l.K1 = l.Keys[0]
+		l.K2 = l.Keys[1]
+		l.K3 = l.Keys[2]
+	} else if len(l.Keys) >= 2 {
+		l.K1 = l.Keys[0]
+		l.K2 = l.Keys[1]
+	} else if len(l.Keys) >= 1 {
+		l.K1 = l.Keys[0]
+	}
+
+	lv := reflect.ValueOf(l).Elem()
+
+	if l.Ks != nil {
+		for i := 3; i <= 20; i++ {
+			k := fmt.Sprintf("K%d", i)
+			lv.FieldByName(k).Set(reflect.ValueOf(l.Ks.Keys[i-1]))
+		}
+	}
+}
+
 // AsyncPut new a metric line.
-func (r *Runner) AsyncPut(keys []string, logType LogType, v1, v2 float64, vx ...float64) {
+func (r *Runner) AsyncPut(keys Key, logType LogType, v1, v2 float64, vx ...float64) {
 	fv := func(idx int) float64 {
 		if len(vx) > idx-3 {
 			return vx[idx-3]
@@ -92,7 +166,8 @@ func (r *Runner) AsyncPut(keys []string, logType LogType, v1, v2 float64, vx ...
 
 	select {
 	case r.C <- Line{
-		Key:     strings.Join(keys, "#"),
+		Keys:    keys.Keys,
+		Key:     strings.Join(keys.Keys, "#"),
 		LogType: logType,
 		V1:      v1,
 		V2:      v2,
@@ -105,6 +180,7 @@ func (r *Runner) AsyncPut(keys []string, logType LogType, v1, v2 float64, vx ...
 		V7:      fv(7),
 		V8:      fv(8),
 		V9:      fv(9),
+		Ks:      keys.ks,
 	}: // processed already.
 	default: // bypass, async.
 	}

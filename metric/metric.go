@@ -1,6 +1,10 @@
 package metric
 
-import "time"
+import (
+	"time"
+
+	"github.com/bingoohuang/gometrics/pkg/ks"
+)
 
 // Recorder record rate.
 type Recorder struct {
@@ -22,7 +26,7 @@ func (r *Runner) MakeRecorder(logType LogType, keys []string) Recorder {
 // PutRecord put a metric record to channel.
 func (c Recorder) PutRecord(v1, v2 float64, vx ...float64) {
 	if c.Checked {
-		c.Runner.AsyncPut(c.Key.Keys, c.LogType, v1, v2, vx...)
+		c.Runner.AsyncPut(c.Key, c.LogType, v1, v2, vx...)
 	}
 }
 
@@ -38,6 +42,12 @@ func RT(keys ...string) RTRecorder { return DefaultRunner.RT(keys...) }
 // RT makes a RT Recorder.
 func (r *Runner) RT(keys ...string) RTRecorder {
 	return RTRecorder{Recorder: r.MakeRecorder(KeyRT, keys), Start: time.Now()}
+}
+
+// Ks add extra keys.
+func (r RTRecorder) Ks(k *ks.Ks) RTRecorder {
+	r.ks = k
+	return r
 }
 
 // Record records a round-time.
@@ -75,6 +85,12 @@ func QPS(keys ...string) QPSRecorder { return DefaultRunner.QPS(keys...) }
 // QPS makes a QPS Recorder.
 func (r *Runner) QPS(keys ...string) QPSRecorder { return QPSRecorder{r.MakeRecorder(KeyQPS, keys)} }
 
+// Ks add extra keys.
+func (q QPSRecorder) Ks(k *ks.Ks) QPSRecorder {
+	q.ks = k
+	return q
+}
+
 // Record records a request.
 func (q QPSRecorder) Record(times float64) {
 	if times > 0 {
@@ -99,6 +115,12 @@ func (r *Runner) SuccessRate(keys ...string) SuccessRateRecorder {
 	return SuccessRateRecorder{r.MakeRecorder(KeySuccessRate, keys)}
 }
 
+// Ks add extra keys.
+func (c SuccessRateRecorder) Ks(k *ks.Ks) SuccessRateRecorder {
+	c.ks = k
+	return c
+}
+
 // IncrSuccess increment success count.
 func (c SuccessRateRecorder) IncrSuccess() { c.PutRecord(1, 0) }
 
@@ -114,6 +136,12 @@ func FailRate(keys ...string) FailRateRecorder { return DefaultRunner.FailRate(k
 // FailRate creates a FailRateRecorder.
 func (r *Runner) FailRate(keys ...string) FailRateRecorder {
 	return FailRateRecorder{r.MakeRecorder(KeyFailRate, keys)}
+}
+
+// Ks add extra keys.
+func (c FailRateRecorder) Ks(k *ks.Ks) FailRateRecorder {
+	c.ks = k
+	return c
 }
 
 // IncrFail increment success count.
@@ -133,6 +161,12 @@ func (r *Runner) HitRate(keys ...string) HitRateRecorder {
 	return HitRateRecorder{r.MakeRecorder(KeyHitRate, keys)}
 }
 
+// Ks add extra keys.
+func (c HitRateRecorder) Ks(k *ks.Ks) HitRateRecorder {
+	c.ks = k
+	return c
+}
+
 // IncrHit increment success count.
 func (c HitRateRecorder) IncrHit() { c.PutRecord(1, 0) }
 
@@ -148,6 +182,12 @@ func Cur(keys ...string) CurRecorder { return DefaultRunner.Cur(keys...) }
 // Cur makes a Cur Recorder.
 func (r *Runner) Cur(keys ...string) CurRecorder {
 	return CurRecorder{r.MakeRecorder(KeyCUR, keys)}
+}
+
+// Ks add extra keys.
+func (c CurRecorder) Ks(k *ks.Ks) CurRecorder {
+	c.ks = k
+	return c
 }
 
 // Record records v1.
