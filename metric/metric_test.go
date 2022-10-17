@@ -6,9 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bingoohuang/gometrics/pkg/ks"
-
 	"github.com/bingoohuang/gometrics/metric"
+	"github.com/bingoohuang/gometrics/pkg/ks"
 )
 
 func TestRT(t *testing.T) {

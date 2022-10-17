@@ -4,11 +4,9 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/bingoohuang/gometrics/pkg/ks"
-
 	"github.com/bingoohuang/golog"
-
 	"github.com/bingoohuang/gometrics/metric"
+	"github.com/bingoohuang/gometrics/pkg/ks"
 )
 
 func init() {

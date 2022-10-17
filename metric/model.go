@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/bingoohuang/gometrics/pkg/ks"
-
 	"github.com/bingoohuang/gometrics/pkg/lineprotocol"
 )
 
@@ -147,7 +146,7 @@ func (l *Line) fulfilKeys() {
 	lv := reflect.ValueOf(l).Elem()
 
 	if l.Ks != nil {
-		for i := 3; i <= 20; i++ {
+		for i := 4; i <= 20; i++ {
 			k := fmt.Sprintf("K%d", i)
 			lv.FieldByName(k).Set(reflect.ValueOf(l.Ks.Keys[i-1]))
 		}
