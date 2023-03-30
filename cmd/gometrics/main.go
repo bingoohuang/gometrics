@@ -1,7 +1,10 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"math/rand"
+	"net/http"
 	"time"
 
 	"github.com/bingoohuang/golog"
@@ -17,6 +20,31 @@ func init() {
 }
 
 func main() {
+	port := flag.Int("port", 0, "http port")
+
+	flag.Parse()
+	if *port > 0 {
+		http.HandleFunc("/none", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json; charset=utf8")
+			w.Write([]byte(`{"State":200}`))
+		})
+		http.HandleFunc("/qps", func(w http.ResponseWriter, r *http.Request) {
+			metric.QPS1("key1", "key2", "key3")
+			w.Header().Set("Content-Type", "application/json; charset=utf8")
+			w.Write([]byte(`{"State":200}`))
+		})
+		http.HandleFunc("/qps_succ", func(w http.ResponseWriter, r *http.Request) {
+			metric.QPS1("key1", "key2", "key3")
+			sr := metric.SuccessRate("key1", "key2", "key3")
+			defer sr.IncrTotal()
+			sr.IncrSuccess()
+			w.Header().Set("Content-Type", "application/json; charset=utf8")
+			w.Write([]byte(`{"State":200}`))
+		})
+		http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
+		return
+	}
+
 	f := func() {
 		time.Sleep(100 + time.Duration(rand.Int31n(900))*time.Millisecond)
 	}
