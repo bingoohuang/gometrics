@@ -32,14 +32,14 @@ func (c Recorder) PutRecord(v1, v2 float64, vx ...float64) {
 
 // RTRecorder is a Round-Time recorder 平均响应时间.
 type RTRecorder struct {
-	Recorder
 	Start time.Time
+	Recorder
 }
 
-// RT makes a RT Recorder.
+// RT makes an RT Recorder.
 func RT(keys ...string) RTRecorder { return DefaultRunner.RT(keys...) }
 
-// RT makes a RT Recorder.
+// RT makes an RT Recorder.
 func (r *Runner) RT(keys ...string) RTRecorder {
 	return RTRecorder{Recorder: r.MakeRecorder(KeyRT, keys), Start: time.Now()}
 }

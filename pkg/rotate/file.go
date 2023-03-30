@@ -14,12 +14,12 @@ import (
 const yyyyMMdd = "yyyy-MM-dd"
 
 type File struct {
-	Filename   string
-	MaxBackups int
+	file     *os.File
+	Filename string
 
-	lastDay string
-	dir     string
-	file    *os.File
+	lastDay    string
+	dir        string
+	MaxBackups int
 }
 
 // NewFile create a rotation option.

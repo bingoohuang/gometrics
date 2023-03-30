@@ -79,6 +79,27 @@ func BenchmarkQPS1(b *testing.B) {
 	}
 }
 
+func TestSuccessRate1(t *testing.T) {
+	//cpuProfileFile, _ := os.Create("cpu.profile")
+	//if err := pprof.StartCPUProfile(cpuProfileFile); err != nil {
+	//	log.Fatalf("pprof.StartCPUProfile failed: %v", err)
+	//}
+
+	start := time.Now()
+	for i := 0; i < 10000; i++ {
+		metric.QPS1("key1", "key2", "key3")
+		//
+		//sr := metric.SuccessRate("key1", "key2", "key3")
+		//sr.IncrSuccess()
+		//sr.IncrTotal()
+	}
+
+	//pprof.StopCPUProfile()
+	t.Logf("cost %s", time.Since(start))
+
+	time.Sleep(1 * time.Minute)
+}
+
 func TestSuccessRate(t *testing.T) {
 	sr := metric.SuccessRate("key1", "key2", "key3")
 	sr.Ks(ks.K4("a").K8("8")).IncrSuccess()

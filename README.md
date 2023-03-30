@@ -36,17 +36,19 @@ metrics golang client library.
     HB_INTERVAL=20s
     # Metrics对象的处理容量，默认1000，来不及处理时，超额扔弃处理
     CHAN_CAP=1000
+    # 在指标来不及处理时，是否自动扔弃
+    AUTO_DROP = false
     # 日志存放的目录，默认/tmp/log/metrics
     LOG_PATH=/var/log/footstone/metrics
     # 日志文件最大保留天数
     MAX_BACKUPS=7
     ```
 
-1. 通过命令行环境变量设置
+2. 通过命令行环境变量设置
 
    eg. `APP_NAME=demo demoproc`
 
-1. 通过命令行指定环境文件名
+3. 通过命令行指定环境文件名
 
    eg. `ENV_FILE=testdata/golden.env demoproc`
 
@@ -152,12 +154,12 @@ func YourBusinessDemoCur() {
 ### Demo
 
 1. build `make`
-1. build for linux
+2. build for linux
 
     - `make linux`
     - `bssh scp -H A-gw-test2 ~/go/bin/linux_amd64/gometrics r:./bingoohuang/gometrics`
 
-1. run `GOLOG_STDOUT=true ENV_FILE=testdata/golden.env gometrics`
+3. run `GOLOG_STDOUT=true ENV_FILE=testdata/golden.env gometrics`
 
 ```bash
 $ tail -f /tmp/metricslog/metrics-hb.bingoohuangapp.log

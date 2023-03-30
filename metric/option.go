@@ -14,11 +14,12 @@ import (
 // Option defines the option for runner.
 type Option struct {
 	AppName         string        `env:"APP_NAME"`                            // 应用名称，默认使用当前进程的PID
+	LogPath         string        `default:"/tmp/log/metrics" env:"LOG_PATH"` // 日志路径
 	MetricsInterval time.Duration `default:"1s" env:"METRICS_INTERVAL"`       // 每隔多少时间记录一次日志
 	HBInterval      time.Duration `default:"20s" env:"HB_INTERVAL"`           // 每隔多少时间记录一次心跳日志
 	ChanCap         int           `default:"1000" env:"CHAN_CAP"`             // 指标通道容量，当指标大量发送容量堆满时，自动扔弃
-	LogPath         string        `default:"/tmp/log/metrics" env:"LOG_PATH"` // 日志路径
 	MaxBackups      int           `default:"7" env:"MAX_BACKUPS"`             // 最大保留天数
+	AutoDrop        bool          `env:"AUTO_DROP"`                           // 在指标来不及处理时，是否自动扔弃
 	Debug           bool          `env:"DEBUG"`                               // 开启测试模式
 }
 

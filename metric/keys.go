@@ -8,10 +8,9 @@ import (
 
 // Key defines a slice of keys.
 type Key struct {
+	ks      *ks.Ks
 	Keys    []string
 	Checked bool
-
-	ks *ks.Ks
 }
 
 // NewKey create Keys.

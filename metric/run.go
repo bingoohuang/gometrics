@@ -31,19 +31,21 @@ func Stop() {
 // Runner is a runner for metric rotate writing.
 type Runner struct {
 	startTime time.Time
-	AppName   string
-
-	MetricsInterval time.Duration
-	HBInterval      time.Duration
-
-	C    chan Line
-	stop chan bool
 
 	MetricsLogfile io.Writer
 	HBLogfile      io.Writer
 
-	cache  map[cacheKey]*Line
-	option *Option
+	C    chan *Line
+	stop chan bool
+
+	cache   map[cacheKey]*Line
+	option  *Option
+	AppName string
+
+	MetricsInterval time.Duration
+	HBInterval      time.Duration
+
+	autoDrop bool
 }
 
 type cacheKey struct {
@@ -69,7 +71,8 @@ func NewRunner(ofs ...OptionFn) *Runner {
 		AppName:         o.AppName,
 		MetricsInterval: o.MetricsInterval,
 		HBInterval:      o.HBInterval,
-		C:               make(chan Line, o.ChanCap),
+		C:               make(chan *Line, o.ChanCap),
+		autoDrop:        o.AutoDrop,
 		stop:            make(chan bool, 1),
 		cache:           make(map[cacheKey]*Line),
 	}
@@ -124,10 +127,6 @@ func (r *Runner) run() {
 		select {
 		case l := <-r.C:
 			r.mergeLog(l)
-
-			if r.afterMetricsInterval() {
-				r.logMetrics()
-			}
 		case <-metricsTicker.C:
 			r.logMetrics()
 		case <-hbTicker.C:
@@ -201,7 +200,7 @@ func (r *Runner) writeLog(file io.Writer, v Line) {
 	}
 }
 
-func (r *Runner) mergeLog(l Line) {
+func (r *Runner) mergeLog(l *Line) {
 	k := l.makeCacheKey()
 	if c, ok := r.cache[k]; ok {
 		if l.LogType.isSimple() { // 瞬值，直接更新日志
@@ -218,7 +217,7 @@ func (r *Runner) mergeLog(l Line) {
 
 		c.updateMinMax(l)
 	} else {
-		r.cache[k] = &l
+		r.cache[k] = l
 	}
 }
 
@@ -234,7 +233,7 @@ func (r *Runner) logHB() {
 	})
 }
 
-func (l *Line) updateMinMax(n Line) {
+func (l *Line) updateMinMax(n *Line) {
 	uv1, uv2, curMin, curMax := l.V1+n.V1, l.V2+n.V2, l.Min, l.Max
 	uv3 := l.V3 + n.V3
 	uv4 := l.V4 + n.V4

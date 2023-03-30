@@ -51,25 +51,7 @@ const TimeLayout = "20060102150405000"
 
 // Line represents a metric rotate line structure in rotate file.
 type Line struct {
-	Time     string  `json:"time"` // yyyyMMddHHmmssSSS
-	Key      string  `json:"key"`  // {{k1}}#{{k2}}#{{k3}}
-	Hostname string  `json:"hostname"`
-	LogType  LogType `json:"logtype"`
-	V1       float64 `json:"v1"` // 小数
-	V2       float64 `json:"v2"` // 只有比率类型的时候，才用到v2
-	V3       float64 `json:"v3"` // RT 当 [300-400) ms 时 v3 = 1
-	V4       float64 `json:"v4"` // RT 当 [400-500) ms 时 v4 = 1
-	V5       float64 `json:"v5"` // RT 当 [500-600) ms 时 v5 = 1
-	V6       float64 `json:"v6"` // RT 当 [600-700) ms 时 v6 = 1
-	V7       float64 `json:"v7"` // RT 当 [700-800) ms 时 v7 = 1
-	V8       float64 `json:"v8"` // RT 当 [800-900) ms 时 v8 = 1
-	V9       float64 `json:"v9"` // RT 当 [900-∞) ms 时 v9 = 1
-
-	Min float64 `json:"min"` // 累计最小值
-	Max float64 `json:"max"` // 累计最大值
-
-	Keys []string `json:"-"`
-	Ks   *ks.Ks   `json:"-"`
+	Ks *ks.Ks `json:"-"`
 
 	K1  string `json:"k1,omitempty"`
 	K2  string `json:"k2,omitempty"`
@@ -91,6 +73,25 @@ type Line struct {
 	K18 string `json:"k18,omitempty"`
 	K19 string `json:"k19,omitempty"`
 	K20 string `json:"k20,omitempty"`
+
+	Key      string  `json:"key"` // {{k1}}#{{k2}}#{{k3}}
+	LogType  LogType `json:"logtype"`
+	Time     string  `json:"time"` // yyyyMMddHHmmssSSS
+	Hostname string  `json:"hostname"`
+
+	Keys []string `json:"-"`
+	Min  float64  `json:"min"` // 累计最小值
+	Max  float64  `json:"max"` // 累计最大值
+
+	V1 float64 `json:"v1"` // 小数
+	V2 float64 `json:"v2"` // 只有比率类型的时候，才用到v2
+	V3 float64 `json:"v3"` // RT 当 [300-400) ms 时 v3 = 1
+	V4 float64 `json:"v4"` // RT 当 [400-500) ms 时 v4 = 1
+	V5 float64 `json:"v5"` // RT 当 [500-600) ms 时 v5 = 1
+	V6 float64 `json:"v6"` // RT 当 [600-700) ms 时 v6 = 1
+	V7 float64 `json:"v7"` // RT 当 [700-800) ms 时 v7 = 1
+	V8 float64 `json:"v8"` // RT 当 [800-900) ms 时 v8 = 1
+	V9 float64 `json:"v9"` // RT 当 [900-∞) ms 时 v9 = 1
 }
 
 // ToLineProtocol print l to a influxdb v1 line protocol format.
@@ -163,8 +164,7 @@ func (r *Runner) AsyncPut(keys Key, logType LogType, v1, v2 float64, vx ...float
 		return 0
 	}
 
-	select {
-	case r.C <- Line{
+	line := &Line{
 		Keys:    keys.Keys,
 		Key:     strings.Join(keys.Keys, "#"),
 		LogType: logType,
@@ -180,7 +180,13 @@ func (r *Runner) AsyncPut(keys Key, logType LogType, v1, v2 float64, vx ...float
 		V8:      fv(8),
 		V9:      fv(9),
 		Ks:      keys.ks,
-	}: // processed already.
-	default: // bypass, async.
+	}
+	if r.autoDrop {
+		select {
+		case r.C <- line:
+		default: // bypass, async.
+		}
+	} else {
+		r.C <- line
 	}
 }
