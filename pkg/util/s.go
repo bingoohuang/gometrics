@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 // Hostname stores hostname.
@@ -36,19 +37,23 @@ func Esc(s string) string {
 	return string(j)[1 : len(j)-1]
 }
 
-// Abbr abbreviate s to max length.
-func Abbr(s string, max int, postfix string) string {
-	l := len(s)
-	if l <= max {
+// Abbreviate 将 string/[]byte 缩略到 maxLen （不包含 ellipse）
+func Abbr(s string, maxLen int, ellipse string) string {
+	if maxLen == 0 {
 		return s
 	}
 
-	i := max - len(postfix)
-	if i > 0 {
-		return s[0:i] + postfix
+	if runeLength := utf8.RuneCountInString(s); runeLength > maxLen {
+		var result []rune
+		for len(result) < maxLen {
+			r, size := utf8.DecodeRuneInString(s)
+			result = append(result, r)
+			s = s[size:]
+		}
+		return string(result) + ellipse
 	}
 
-	return postfix
+	return s
 }
 
 // JSONCompact compact the JSON encoding of data silently.
