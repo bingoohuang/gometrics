@@ -64,13 +64,13 @@ func CreateOption(ofs ...OptionFn) *Option {
 		of(o)
 	}
 
-	o.SetDefaults()
+	o.setDefaults()
 
 	return o
 }
 
 // SetDefaults set the default values to Option.
-func (o *Option) SetDefaults() {
+func (o *Option) setDefaults() {
 	if err := defaults.Set(o); err != nil {
 		logrus.Warnf("defaults set error %v", err)
 	}
